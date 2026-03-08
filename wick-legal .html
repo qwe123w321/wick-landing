@@ -1736,6 +1736,13 @@
       requestAnimationFrame(raf);
     })();
   })();
+
+	// 讀取 URL hash，自動切換到對應 tab
+	(function () {
+	  const hash = location.hash;
+	  if (hash === '#privacy') switchTab('privacy');
+	  else switchTab('terms');
+	})();
 </script>
 </body>
 </html>
