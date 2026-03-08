@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Wick App 服務條款與隱私政策 — Terms of Service and Privacy Policy">
+  <meta name="robots" content="index, follow">
+  <title>Wick — 服務條款 & 隱私政策</title>
+
+  <!-- Canonical & Open Graph -->
+  <link rel="canonical" href="https://your-domain.com/legal">
+  <meta property="og:title" content="Wick Legal — 服務條款 & 隱私政策">
+  <meta property="og:type" content="website">
+
+  <!-- Security headers (instruct your server to also send these as HTTP headers) -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─────────── Design Tokens (mirrors app_theme.dart) ─────────── */
+    :root {
+      --bg:          #1C1008;
+      --surface:     #28180A;
+      --surface-alt: #48382A;
+      --border:      #5E4A36;
+
+      --primary:     #E8D5B0;
+      --primary-soft:#F0E2C4;
+      --primary-dim: #CCB98C;
+
+      --flame:       #B89070;
+      --flame-dim:   #7A5C40;
+
+      --text-primary:   #EEDFC0;  /* slightly lighter than app for web readability */
+      --text-secondary: #AA9272;
+      --text-hint:      #7A6450;
+
+      --success: #8AAF88;
+      --error:   #AF7868;
+
+      --radius-s:  12px;
+      --radius-m:  18px;
+      --radius-l:  24px;
+      --radius-xl: 32px;
+
+      --spacing-xs: 6px;
+      --spacing-s:  12px;
+      --spacing-m:  20px;
+      --spacing-l:  32px;
+
+      --max-width: 800px;
+      --font-zh: 'Noto Serif TC', serif;
+      --font-en: 'Cormorant Garamond', serif;
+    }
+
+    /* ─────────── Reset ─────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ─────────── Base ─────────── */
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-zh);
+      font-size: 15px;
+      line-height: 1.85;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ─────────── Watercolor/Parchment Background ─────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        /* centre warm glow — candle illuminating parchment */
+        radial-gradient(ellipse 120% 70% at 50% 20%, rgba(74,44,18,.52) 0%, rgba(46,26,10,.28) 50%, transparent 100%),
+        /* subtle warm patches */
+        radial-gradient(ellipse 60% 40% at 20% 70%, rgba(60,32,16,.14) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 35% at 80% 55%, rgba(80,50,24,.10) 0%, transparent 70%),
+        /* vignette edges */
+        linear-gradient(to bottom, rgba(8,4,0,.60) 0%, transparent 20%, transparent 80%, rgba(8,4,0,.50) 100%),
+        linear-gradient(to right,  rgba(8,4,0,.38) 0%, transparent 18%, transparent 82%, rgba(8,4,0,.38) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* paper-fibre noise overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.6;
+      z-index: 0;
+    }
+
+    /* ─────────── Layout ─────────── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--spacing-l) 80px;
+    }
+
+    /* ─────────── Header ─────────── */
+    .site-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 0 40px;
+      text-align: center;
+    }
+
+    .candle-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 18px;
+      animation: breathe 3.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 14px rgba(232,213,176,.28));
+    }
+    @keyframes breathe {
+      0%,100% { transform: scale(1);   filter: drop-shadow(0 0 14px rgba(232,213,176,.28)); }
+      50%      { transform: scale(1.05); filter: drop-shadow(0 0 22px rgba(232,213,176,.42)); }
+    }
+
+    .brand-name {
+      font-family: var(--font-en);
+      font-size: 42px;
+      font-weight: 300;
+      letter-spacing: .22em;
+      color: var(--primary);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .brand-tagline {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-hint);
+      letter-spacing: .08em;
+    }
+
+    /* ─────────── Language Toggle ─────────── */
+    .lang-toggle {
+      display: flex;
+      gap: 0;
+      margin-top: 28px;
+      border: 1px solid rgba(94,74,54,.55);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      background: rgba(40,24,10,.6);
+    }
+    .lang-btn {
+      padding: 8px 24px;
+      font-family: var(--font-zh);
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-hint);
+      transition: all .22s ease;
+      letter-spacing: .04em;
+    }
+    .lang-btn.active {
+      background: rgba(232,213,176,.12);
+      color: var(--primary);
+    }
+    .lang-btn:hover:not(.active) { color: var(--text-secondary); }
+
+    /* ─────────── Tab Bar ─────────── */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-top: 44px;
+      border-bottom: 1px solid rgba(94,74,54,.35);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 14px 0;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      font-family: var(--font-zh);
+      font-size: 14px;
+      color: var(--text-hint);
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: color .22s, border-color .22s;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-btn:hover:not(.active) { color: var(--text-secondary); }
+
+    /* ─────────── Version Badge ─────────── */
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 24px 0 32px;
+      padding: 5px 14px;
+      background: rgba(40,24,10,.7);
+      border: 1px solid rgba(94,74,54,.4);
+      border-radius: var(--radius-xl);
+      font-size: 12px;
+      color: var(--text-hint);
+      letter-spacing: .04em;
+    }
+    .version-badge::before {
+      content: '🕯️';
+      font-size: 12px;
+    }
+
+    /* ─────────── Document Content ─────────── */
+    .doc-panel {
+      display: none;
+    }
+    .doc-panel.active { display: block; }
+
+    /* Table of Contents */
+    .toc {
+      background: rgba(40,24,10,.65);
+      border: 1px solid rgba(94,74,54,.3);
+      border-radius: var(--radius-l);
+      padding: var(--spacing-l);
+      margin-bottom: 36px;
+    }
+    .toc-title {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-hint);
+      margin-bottom: 14px;
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .toc-list a {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 0;
+      transition: color .18s;
+      line-height: 1.5;
+    }
+    .toc-list a:hover { color: var(--primary); }
+    .toc-num {
+      font-family: var(--font-en);
+      font-size: 11px;
+      color: var(--text-hint);
+      min-width: 22px;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(94,74,54,.22);
+    }
+    .section-num {
+      font-family: var(--font-en);
+      font-size: 13px;
+      color: var(--flame);
+      letter-spacing: .06em;
+      min-width: 28px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--primary);
+      letter-spacing: .02em;
+      line-height: 1.4;
+    }
+
+    /* Body text */
+    .section p,
+    .section > div {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 14px;
+    }
+
+    /* Sub-clauses (e.g. 2.1, 2.2…) */
+    .clause {
+      padding: 14px 18px;
+      background: rgba(40,24,10,.5);
+      border-left: 2px solid rgba(94,74,54,.35);
+      border-radius: 0 var(--radius-s) var(--radius-s) 0;
+      margin-bottom: 10px;
+    }
+    .clause-num {
+      font-size: 12px;
+      color: var(--flame);
+      font-family: var(--font-en);
+      margin-bottom: 4px;
+    }
+    .clause p { margin-bottom: 0; font-size: 13.5px; }
+
+    /* Warning block */
+    .warning-block {
+      display: flex;
+      gap: 12px;
+      padding: 16px 18px;
+      background: rgba(175,120,104,.08);
+      border: 1px solid rgba(175,120,104,.22);
+      border-radius: var(--radius-m);
+      margin: 16px 0;
+    }
+    .warning-icon { font-size: 16px; flex-shrink: 0; padding-top: 2px; }
+    .warning-block p {
+      font-size: 13px;
+      color: rgba(238,223,191,.75);
+      margin: 0;
+    }
+
+    /* Data table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: rgba(94,74,54,.18);
+      color: var(--primary-dim);
+      font-weight: 500;
+      letter-spacing: .04em;
+      border-bottom: 1px solid rgba(94,74,54,.3);
+    }
+    .data-table td {
+      padding: 11px 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(94,74,54,.15);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(232,213,176,.03); }
+
+    /* Bullet list */
+    .legal-list {
+      padding-left: 0;
+      list-style: none;
+      margin: 10px 0 14px;
+    }
+    .legal-list li {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      padding: 5px 0;
+      line-height: 1.75;
+    }
+    .legal-list li::before {
+      content: '—';
+      color: var(--flame-dim);
+      flex-shrink: 0;
+      font-size: 12px;
+    }
+
+    /* Lettered sub-items (a)(b)(c) */
+    .sub-items { margin: 8px 0 8px 16px; }
+    .sub-item {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 13px;
+      color: var(--text-secondary);
+      padding: 4px 0;
+      line-height: 1.75;
+    }
+    .sub-item-label {
+      color: var(--flame-dim);
+      font-family: var(--font-en);
+      font-size: 12px;
+      min-width: 20px;
+      flex-shrink: 0;
+    }
+
+    /* Horizontal rule between major sections */
+    .section-divider {
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(to right, var(--flame-dim), transparent);
+      margin: 48px 0 44px;
+    }
+
+    /* ─────────── Footer ─────────── */
+    .site-footer {
+      margin-top: 64px;
+      padding: 32px 0 24px;
+      border-top: 1px solid rgba(94,74,54,.25);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: var(--font-en);
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: .2em;
+      color: var(--text-hint);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .footer-meta {
+      font-size: 12px;
+      color: var(--text-hint);
+      line-height: 1.7;
+    }
+    .footer-meta a {
+      color: var(--flame);
+      text-decoration: none;
+    }
+    .footer-meta a:hover { color: var(--primary); }
+
+    /* ─────────── Back to top ─────────── */
+    .back-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-hint);
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: .04em;
+      transition: color .18s;
+    }
+    .back-top:hover { color: var(--primary); }
+
+    /* ─────────── Scroll progress bar ─────────── */
+    #scroll-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(to right, var(--flame-dim), var(--primary));
+      z-index: 999;
+      transition: width .1s linear;
+    }
+
+    /* ─────────── Responsive — Mobile ─────────── */
+
+    /* 768px：平板過渡 */
+    @media (max-width: 768px) {
+      :root { --max-width: 100%; }
+      .page-wrapper { padding: 0 24px 72px; }
+    }
+
+    /* 640px：手機主斷點 */
+    @media (max-width: 640px) {
+
+      /* ── Header ── */
+      .site-header  { padding: 36px 0 28px; }
+      .candle-icon  { width: 44px; height: 44px; margin-bottom: 14px; }
+      .brand-name   { font-size: 30px; letter-spacing: .18em; }
+      .brand-tagline{ font-size: 12px; }
+      .lang-toggle  { margin-top: 18px; }
+      .lang-btn     { padding: 7px 18px; font-size: 12px; }
+
+      /* ── Tab bar ── */
+      .tab-btn { font-size: 13px; padding: 12px 0; letter-spacing: .02em; }
+
+      /* ── Version badge ── */
+      .version-badge { font-size: 11px; padding: 4px 12px; margin: 18px 0 24px; }
+
+      /* ── TOC：折疊式 ── */
+      .toc { padding: 14px 16px; }
+      .toc-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+      .toc-toggle-icon {
+        font-size: 14px;
+        color: var(--text-hint);
+        transition: transform .22s ease;
+      }
+      .toc.open .toc-toggle-icon { transform: rotate(180deg); }
+      .toc-list {
+        display: none;
+        margin-top: 12px;
+      }
+      .toc.open .toc-list { display: flex; }
+      .toc-list a { font-size: 12.5px; padding: 3px 0; }
+      .toc-num     { min-width: 18px; font-size: 10px; }
+
+      /* ── Section ── */
+      .section { margin-bottom: 32px; }
+      .section-header { margin-bottom: 14px; padding-bottom: 10px; gap: 8px; }
+      .section-num    { font-size: 11px; min-width: 22px; }
+      .section-title  { font-size: 15px; }
+
+      /* ── Body text ── */
+      .section p,
+      .section > div  { font-size: 14px; line-height: 2; margin-bottom: 12px; }
+
+      /* ── Clause ── */
+      .clause         { padding: 12px 14px; margin-bottom: 8px; }
+      .clause p       { font-size: 13.5px; line-height: 1.95; }
+      .clause-num     { font-size: 11px; }
+
+      /* ── Sub-items ── */
+      .sub-items      { margin: 6px 0 6px 8px; }
+      .sub-item       { font-size: 13px; padding: 3px 0; gap: 8px; }
+      .sub-item-label { min-width: 18px; font-size: 11px; }
+
+      /* ── Warning block ── */
+      .warning-block  { padding: 13px 14px; gap: 10px; border-radius: var(--radius-s); }
+      .warning-block p{ font-size: 12.5px; }
+
+      /* ── Legal list ── */
+      .legal-list li  { font-size: 13px; gap: 8px; }
+
+      /* ── Data table → 卡片堆疊 ── */
+      .data-table           { display: block; }
+      .data-table thead     { display: none; }   /* 隱藏桌面表頭 */
+      .data-table tbody     { display: block; }
+      .data-table tr {
+        display: block;
+        margin-bottom: 12px;
+        background: rgba(40,24,10,.6);
+        border: 1px solid rgba(94,74,54,.28);
+        border-radius: var(--radius-m);
+        padding: 14px 16px;
+      }
+      .data-table tr:hover td { background: transparent; }
+      .data-table td {
+        display: block;
+        border: none;
+        padding: 5px 0;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+      /* 每個 td 用 data-label 補回欄位名稱 */
+      .data-table td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 10.5px;
+        color: var(--primary-dim);
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+        opacity: .85;
+      }
+      /* 最後一個 td 不需要分隔 */
+      .data-table td:last-child { padding-bottom: 0; }
+      /* td 之間加細線分隔 */
+      .data-table td:not(:last-child) {
+        border-bottom: 1px solid rgba(94,74,54,.15);
+        padding-bottom: 8px;
+        margin-bottom: 3px;
+      }
+
+      /* ── Footer ── */
+      .site-footer  { margin-top: 48px; padding: 24px 0 20px; }
+      .footer-meta  { font-size: 11.5px; }
+    }
+
+    /* 360px：極小手機補丁 */
+    @media (max-width: 360px) {
+      .page-wrapper { padding: 0 16px 60px; }
+      .brand-name   { font-size: 26px; }
+      .clause       { padding: 10px 12px; }
+    }
+
+    /* ─────────── Fade-in on load ─────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp .55s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: none; }
+    }
+    .fade-in:nth-child(2) { animation-delay: .08s; }
+    .fade-in:nth-child(3) { animation-delay: .16s; }
+    .fade-in:nth-child(4) { animation-delay: .24s; }
+	
+	/* ═══ 滑鼠光暈（桌面專用）═══ */
+	#mouse-glow {
+	  position: fixed;
+	  width: 320px;
+	  height: 320px;
+	  border-radius: 50%;
+	  pointer-events: none;
+	  z-index: 999;
+	  transform: translate(-50%, -50%);
+	  background: radial-gradient(
+		ellipse,
+		rgba(184,144,112,.06) 0%,
+		rgba(184,144,112,.025) 40%,
+		transparent 70%
+	  );
+	  mix-blend-mode: screen;
+	  transition: opacity .4s ease, width .4s ease, height .4s ease;
+	  opacity: 0;
+	}
+	body.mouse-active #mouse-glow { opacity: 1; }
+
+	/* 手機版隱藏 */
+	@media (hover: none), (pointer: coarse) {
+	  #mouse-glow { display: none; }
+	}
+	
+	/* ═══ 自訂游標 ═══ */
+	body { cursor: none; }
+	button { cursor: none; }
+
+	#cur {
+	  position: fixed; width: 6px; height: 6px;
+	  background: #E8D5B0; border-radius: 50%;
+	  pointer-events: none; z-index: 9999;
+	  transform: translate(-50%, -50%);
+	  mix-blend-mode: screen;
+	  box-shadow: 0 0 8px 2px rgba(232,213,176,.35);
+	  transition: width .2s, height .2s, box-shadow .2s;
+	}
+	#cur-r1 {
+	  position: fixed; width: 28px; height: 28px;
+	  border: 1px solid rgba(232,213,176,.3); border-radius: 50%;
+	  pointer-events: none; z-index: 9997;
+	  transform: translate(-50%, -50%);
+	  transition: width .32s cubic-bezier(0.16,1,0.3,1), height .32s cubic-bezier(0.16,1,0.3,1), border-color .25s;
+	}
+	#cur-r2 {
+	  position: fixed; width: 52px; height: 52px;
+	  border: 1px solid rgba(232,213,176,.1); border-radius: 50%;
+	  pointer-events: none; z-index: 9996;
+	  transform: translate(-50%, -50%);
+	  transition: width .55s cubic-bezier(0.16,1,0.3,1), height .55s cubic-bezier(0.16,1,0.3,1), border-color .3s;
+	}
+	#mouse-glow {
+	  position: fixed; width: 320px; height: 320px;
+	  border-radius: 50%; pointer-events: none; z-index: 9001;
+	  transform: translate(-50%, -50%);
+	  background: radial-gradient(ellipse, rgba(184,144,112,.06) 0%, rgba(184,144,112,.025) 40%, transparent 70%);
+	  mix-blend-mode: screen;
+	  transition: opacity .4s ease;
+	  opacity: 0;
+	}
+	body.mouse-active #mouse-glow { opacity: 1; }
+
+	/* hover 展開 */
+	body.hovering #cur { width: 8px; height: 8px; box-shadow: 0 0 14px 4px rgba(232,213,176,.4); }
+	body.hovering #cur-r1 { width: 44px; height: 44px; border-color: rgba(232,213,176,.45); }
+	body.hovering #cur-r2 { width: 80px; height: 80px; border-color: rgba(232,213,176,.15); }
+	body.hovering #mouse-glow { width: 480px; height: 480px; }
+
+	/* 點擊收縮 */
+	body.clicking #cur-r1 { width: 14px; height: 14px; border-color: rgba(232,213,176,.8); }
+	body.clicking #cur-r2 { width: 24px; height: 24px; border-color: rgba(232,213,176,.5); }
+
+	/* 手機版隱藏 */
+	@media (hover: none), (pointer: coarse) {
+	  #cur, #cur-r1, #cur-r2, #mouse-glow { display: none; }
+	  body, button { cursor: auto; }
+	}
+  </style>
+</head>
+<body>
+
+<!-- Scroll progress indicator -->
+<div id="scroll-bar" aria-hidden="true"></div>
+
+<div id="cur"        aria-hidden="true"></div>
+<div id="cur-r1"     aria-hidden="true"></div>
+<div id="cur-r2"     aria-hidden="true"></div>
+<div id="mouse-glow" aria-hidden="true"></div>
+
+<div id="mouse-glow" aria-hidden="true"></div>
+
+<div class="page-wrapper">
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header class="site-header fade-in">
+    <!-- Inline SVG candle (no external dependency) -->
+    <svg class="candle-icon" viewBox="0 0 56 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- flame outer -->
+      <ellipse cx="28" cy="13" rx="6" ry="11" fill="url(#fg1)" opacity=".85"/>
+      <!-- flame inner -->
+      <ellipse cx="28" cy="15" rx="3" ry="6.5" fill="url(#fg2)"/>
+      <!-- wick -->
+      <line x1="28" y1="22" x2="28" y2="26" stroke="#3D200A" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- body -->
+      <rect x="14" y="26" width="28" height="48" rx="6" fill="url(#cb)"/>
+      <!-- highlight -->
+      <rect x="18" y="30" width="7" height="24" rx="3.5" fill="white" opacity=".13"/>
+      <defs>
+        <linearGradient id="fg1" x1="28" y1="2" x2="28" y2="24" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stop-color="#F5E060"/>
+          <stop offset="50%" stop-color="#E88830"/>
+          <stop offset="100%" stop-color="#C04010" stop-opacity=".3"/>
+        </linearGradient>
+        <linearGradient id="fg2" x1="28" y1="8" x2="28" y2="22" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stop-color="#FFF5C0"/>
+          <stop offset="100%" stop-color="#E06020" stop-opacity=".7"/>
+        </linearGradient>
+        <linearGradient id="cb" x1="14" y1="26" x2="42" y2="74" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stop-color="#F0E2C4"/>
+          <stop offset="100%" stop-color="#C4A878"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="brand-name">Wick</div>
+    <div class="brand-tagline" id="tagline-text">有些緣分，需要剛好</div>
+
+    <!-- Language Toggle -->
+    <nav class="lang-toggle" aria-label="Language selection">
+      <button class="lang-btn active" data-lang="zh" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn"        data-lang="en" onclick="setLang('en')">English</button>
+    </nav>
+  </header>
+
+  <!-- ═══════════════ TAB BAR ═══════════════ -->
+  <nav class="tab-bar fade-in" aria-label="Document tabs" role="tablist">
+    <button class="tab-btn active" role="tab" aria-selected="true"
+            id="tab-terms" aria-controls="panel-terms"
+            onclick="switchTab('terms')" data-zh="服務條款" data-en="Terms of Service">
+      服務條款
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            id="tab-privacy" aria-controls="panel-privacy"
+            onclick="switchTab('privacy')" data-zh="隱私政策" data-en="Privacy Policy">
+      隱私政策
+    </button>
+  </nav>
+
+  <!-- ═══════════════ TERMS — 繁中 ═══════════════ -->
+  <main>
+
+  <!-- TERMS ZH -->
+  <div id="panel-terms-zh" class="doc-panel active" role="tabpanel" aria-labelledby="tab-terms">
+    <div class="version-badge">v2.5 · 最後更新：2026 年 3 月 6 日</div>
+
+    <!-- TOC -->
+    <nav class="toc" aria-label="目錄" id="toc-terms-zh">
+      <div class="toc-toggle" onclick="toggleTOC('toc-terms-zh')" role="button" aria-expanded="false" tabindex="0">
+        <div class="toc-title" style="margin-bottom:0;">目錄</div>
+        <span class="toc-toggle-icon">▾</span>
+      </div>
+      <ul class="toc-list">
+        <li><a href="#tz-1"><span class="toc-num">一</span>服務說明</a></li>
+        <li><a href="#tz-2"><span class="toc-num">二</span>使用資格</a></li>
+        <li><a href="#tz-3"><span class="toc-num">三</span>帳號與安全</a></li>
+        <li><a href="#tz-4"><span class="toc-num">四</span>使用者行為規範</a></li>
+        <li><a href="#tz-5"><span class="toc-num">五</span>位置資訊使用</a></li>
+        <li><a href="#tz-6"><span class="toc-num">六</span>付費服務</a></li>
+        <li><a href="#tz-7"><span class="toc-num">七</span>智慧財產權</a></li>
+        <li><a href="#tz-8"><span class="toc-num">八</span>帳號管理、暫停與終止</a></li>
+        <li><a href="#tz-9"><span class="toc-num">九</span>免責聲明</a></li>
+        <li><a href="#tz-10"><span class="toc-num">十</span>責任限制</a></li>
+        <li><a href="#tz-11"><span class="toc-num">十一</span>條款修改</a></li>
+        <li><a href="#tz-12"><span class="toc-num">十二</span>準據法與管轄</a></li>
+        <li><a href="#tz-13"><span class="toc-num">十三</span>可分割性</a></li>
+        <li><a href="#tz-14"><span class="toc-num">十四</span>完整協議</a></li>
+        <li><a href="#tz-15"><span class="toc-num">十五</span>聯絡方式</a></li>
+      </ul>
+    </nav>
+
+    <p style="font-size:13.5px; color:var(--text-secondary); margin-bottom:32px; line-height:1.9;">
+      請您在使用 Wick 應用程式（以下簡稱「本服務」）前，詳細閱讀以下服務條款。當您點選「同意並繼續」，即表示您已閱讀、理解並同意受本條款之約束。若您不同意本條款，請勿使用本服務。
+    </p>
+
+    <section class="section" id="tz-1">
+      <div class="section-header"><span class="section-num">第一條</span><h2 class="section-title">服務說明</h2></div>
+      <p>本服務為以地點為核心的社交探索應用程式，由 Wick 應用程式開發者（以下簡稱「開發者」）獨立開發及營運。使用者可於特定時間點燃「Wick」，向半徑 500 公尺內的其他使用者顯示自身的概略位置，並透過「LIKE」與「配對」機制與附近的人建立聯繫。本服務定位為社交探索工具，不保證任何配對結果或人際關係之達成。</p>
+    </section>
+
+    <section class="section" id="tz-2">
+      <div class="section-header"><span class="section-num">第二條</span><h2 class="section-title">使用資格</h2></div>
+      <div class="clause"><div class="clause-num">2.1</div><p>您須年滿 18 歲方可使用本服務。</p></div>
+      <div class="clause"><div class="clause-num">2.2</div><p>您須具備完整的法律行為能力，能以自身名義締結具有法律效力之契約。</p></div>
+      <div class="clause"><div class="clause-num">2.3</div><p>若您代表組織或企業使用本服務，您聲明您有權代表該主體接受本條款。</p></div>
+      <div class="clause"><div class="clause-num">2.4</div><p>開發者保留審查並拒絕任何註冊申請之權利，無須說明理由。</p></div>
+      <div class="clause"><div class="clause-num">2.5</div><p>本服務依賴您於登入時提供的年齡資訊進行驗證，開發者無法技術性核實您的真實年齡。若您提供不實年齡資訊而使用本服務，相關法律責任由您自行承擔，開發者不負連帶責任。</p></div>
+    </section>
+
+    <section class="section" id="tz-3">
+      <div class="section-header"><span class="section-num">第三條</span><h2 class="section-title">帳號與安全</h2></div>
+      <div class="clause"><div class="clause-num">3.1</div><p>您須以 Google 或 Apple 帳號進行身份驗證方可使用本服務。</p></div>
+      <div class="clause"><div class="clause-num">3.2</div><p>您應妥善保管您的帳號存取憑證，並對帳號下的所有活動負責。</p></div>
+      <div class="clause"><div class="clause-num">3.3</div><p>如發現帳號遭未授權使用，請立即透過 App 內「聯絡客服」通知開發者。</p></div>
+      <div class="clause"><div class="clause-num">3.4</div><p>一人僅限擁有一個帳號。任何試圖建立多個帳號之行為，開發者得逕行終止相關帳號。</p></div>
+    </section>
+
+    <section class="section" id="tz-4">
+      <div class="section-header"><span class="section-num">第四條</span><h2 class="section-title">使用者行為規範</h2></div>
+      <div class="clause">
+        <div class="clause-num">4.1　禁止行為</div>
+        <p>您同意不從事以下行為：</p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span>騷擾、恐嚇、跟蹤、威脅或以任何方式傷害其他使用者；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span>發送垃圾訊息、廣告或未經請求之商業訊息；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span>冒充他人或提供虛假身份資訊；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(d)</span><span>上傳或分享含有裸露、色情、暴力或仇恨性質之內容；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(e)</span><span>從事任何違反中華民國法律或其他適用法律之行為；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(f)</span><span>試圖規避、破壞或干擾本服務之安全功能或伺服器；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(g)</span><span>以任何自動化方式（包括爬蟲、機器人、腳本）存取本服務；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(h)</span><span>蒐集、儲存或散布其他使用者的個人資料，包括位置資訊；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(i)</span><span>以任何方式對本服務進行逆向工程或反組譯。</span></div>
+        </div>
+      </div>
+      <div class="warning-block">
+        <span class="warning-icon">⚠️</span>
+        <p><strong>特別警示：</strong>本服務揭露使用者之概略位置資訊。任何人不得利用本服務取得之位置或個人資訊，對他人實施跟蹤、監視、騷擾或其他侵害行為。上述行為可能違反《跟蹤騷擾防制法》及其他刑事法律，開發者將積極配合警察機關調查，並依法提供完整記錄（包括帳號資訊、位置記錄及操作日誌）。</p>
+      </div>
+      <div class="clause">
+        <div class="clause-num">4.2　內容責任</div>
+        <p>您對自己所發布之文字、圖片及其他內容負完全責任。您保證您上傳至本服務之任何內容均不侵犯任何第三方之著作權、商標或其他智慧財產權，亦不違反任何適用法律。如因您上傳之內容導致開發者遭受任何第三方索賠、損失或費用，您同意賠償並使開發者免受損害。開發者保留自行判斷移除任何違規內容之權利，無須事先通知。</p>
+      </div>
+      <div class="clause">
+        <div class="clause-num">4.3　檢舉機制</div>
+        <p>如您發現其他使用者違反上述規範，請使用 App 內之「檢舉」功能通報。開發者將於合理時間內進行審查處理。</p>
+      </div>
+      <div class="clause">
+        <div class="clause-num">4.4　開發者之內容審查權</div>
+        <p>為維護平台安全及處理檢舉案件，開發者保留在合理必要範圍內審查使用者上傳內容（包括文字、圖片）之權利。開發者不主動、例行性地閱覽您的私人聊天內容，但在下列情形下得進行調查：</p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span>收到其他使用者之有效檢舉；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span>偵測到疑似違反本條款之異常行為；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span>依法院命令或主管機關合法要求。</span></div>
+        </div>
+      </div>
+      <div class="clause">
+        <div class="clause-num">4.5　配合執法機關</div>
+        <p>如收到法院命令、檢察官指揮或其他主管機關之合法要求，開發者得依法提供使用者之相關資料（包括帳號資訊、通訊紀錄及位置資訊）。除法律禁止通知者外，開發者將以合理方式告知受影響之使用者。</p>
+      </div>
+    </section>
+
+    <section class="section" id="tz-5">
+      <div class="section-header"><span class="section-num">第五條</span><h2 class="section-title">位置資訊使用</h2></div>
+      <div class="clause"><div class="clause-num">5.1</div><p>本服務會在您開啟 App 時取得 GPS 位置一次，用於地圖初始定位；並於您主動「點燃 Wick」時另取得位置一次，用於雷達配對功能。兩者均不進行持續背景追蹤，不要求背景定位權限。</p></div>
+      <div class="clause"><div class="clause-num">5.2</div><p>您的確切座標不會向其他使用者揭露。雷達地圖上顯示的位置為加入隨機誤差後的概略位置，誤差範圍為數十至數百公尺。</p></div>
+      <div class="clause"><div class="clause-num">5.3</div><p>位置資料將於 Wick 燃盡後自動從可見列表中移除，原始座標於 24 小時內刪除。</p></div>
+      <div class="clause"><div class="clause-num">5.4</div><p>您可隨時於裝置設定中撤回位置使用授權，但撤回後將無法使用雷達配對等核心功能。</p></div>
+    </section>
+
+    <section class="section" id="tz-6">
+      <div class="section-header"><span class="section-num">第六條</span><h2 class="section-title">付費服務</h2></div>
+      <div class="clause"><div class="clause-num">6.1</div><p>本服務提供免費方案及付費訂閱方案（Spark、Flame、Inferno）。</p></div>
+      <div class="clause"><div class="clause-num">6.2</div><p>所有付費交易均透過 Apple App Store 或 Google Play 商店處理，適用各平台之退款政策。開發者不直接處理信用卡或金融資料。如本條款與 Apple App Store 或 Google Play 服務條款有衝突，於各平台管轄範圍內以各平台條款為準。</p></div>
+      <div class="clause"><div class="clause-num">6.3</div><p>訂閱方案將於每個計費週期自動續訂，直至您透過 Apple 或 Google 帳號設定取消為止。取消後，付費權益將持續至當期計費週期結束。</p></div>
+      <div class="clause"><div class="clause-num">6.4</div><p>虛擬道具（聊天室名額、Wick 加購包）為數位商品，於購買並開始提供服務後，依《通訊交易解除權合理例外情事適用準則》，不適用消費者保護法第 19 條所定之 7 天猶豫期，一經兌換不予退款，但法律強制要求者除外。</p></div>
+      <div class="clause"><div class="clause-num">6.5</div><p>開發者保留隨時調整訂閱方案內容及價格之權利，並將於調整前以適當方式通知使用者。</p></div>
+    </section>
+
+    <section class="section" id="tz-7">
+      <div class="section-header"><span class="section-num">第七條</span><h2 class="section-title">智慧財產權</h2></div>
+      <div class="clause"><div class="clause-num">7.1</div><p>本服務之所有內容，包括但不限於文字、圖像、介面設計、商標（Wick 字樣及燭火圖形）及程式碼，均為開發者之財產，受著作權法及其他智慧財產權法律保護。未經授權，不得複製、散布或作商業利用。</p></div>
+      <div class="clause"><div class="clause-num">7.2</div><p>您授予開發者非專屬、全球性、免授權費、可再授權之授權，以使用您上傳至本服務之內容（包括文字、圖片），用於提供、改善及推廣本服務之目的。此授權於您刪除相關內容或帳號後終止，但已合法散布之副本不在此限。</p></div>
+    </section>
+
+    <section class="section" id="tz-8">
+      <div class="section-header"><span class="section-num">第八條</span><h2 class="section-title">帳號管理、暫停與終止</h2></div>
+      <div class="clause"><div class="clause-num">8.1</div><p>開發者保留隨時修改、暫停或終止本服務（全部或部分）之權利，如非緊急情形，將盡力提前通知使用者。</p></div>
+      <div class="clause">
+        <div class="clause-num">8.2　暫停 / 終止情形</div>
+        <p><strong style="color:var(--primary-dim);">重大違規（立即終止）：</strong></p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span>違反第四條 4.1(a)（騷擾、跟蹤）、4.1(d)（色情或暴力內容）或 4.1(e)（違法行為）等重大條文；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span>開發者合理懷疑帳號從事詐欺、濫用或損害其他使用者之行為；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span>開發者合理懷疑您未滿 18 歲；</span></div>
+          <div class="sub-item"><span class="sub-item-label">(d)</span><span>為維護整體平台安全或依法律要求所必要之預防性措施。</span></div>
+        </div>
+        <p style="margin-top:10px;"><strong style="color:var(--primary-dim);">一般違規（情節嚴重者得停權，輕微者先警告）：</strong></p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(e)</span><span>違反本條款其他條文，且經檢舉查證屬實；情節嚴重者得直接停權，情節輕微者先警告，未改正再停權。</span></div>
+        </div>
+        <p style="margin-top:10px;"><strong style="color:var(--primary-dim);">閒置帳號：</strong></p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(f)</span><span>超過 24 個月未登入，開發者將提前 7 天通知，可重新登入保留帳號；逾期未登入者，帳號及相關資料將依隱私政策規定刪除。</span></div>
+        </div>
+      </div>
+      <div class="clause"><div class="clause-num">8.3</div><p>帳號因重大違規被終止時，開發者不退還任何已購買之訂閱費用、Wick 加購包或聊天室名額。若帳號因閒置被刪除，開發者將提前 7 天通知。</p></div>
+      <div class="clause"><div class="clause-num">8.4</div><p>您對停用或終止決定有異議時，可於收到通知後 14 天內透過 App 內「聯絡客服」提出申訴，開發者將於 15 個工作日內回覆。申訴期間帳號維持停用狀態。</p></div>
+      <div class="clause"><div class="clause-num">8.5</div><p>您可隨時於應用程式設定中申請刪除帳號，終止使用本服務。帳號刪除後，相關資料將依本服務隱私政策之規定處理。</p></div>
+      <div class="clause"><div class="clause-num">8.6</div><p>帳號終止後，您依本條款取得之所有授權及使用權利隨即終止。未使用之虛擬道具餘額將一併失效，不予退款。</p></div>
+    </section>
+
+    <section class="section" id="tz-9">
+      <div class="section-header"><span class="section-num">第九條</span><h2 class="section-title">免責聲明</h2></div>
+      <div class="clause"><div class="clause-num">9.1</div><p>本服務依「現狀」及「可供使用之狀態」提供，開發者不就服務之適用性、可靠性、準確性或不中斷性作任何明示或默示之保證。</p></div>
+      <div class="clause"><div class="clause-num">9.2</div><p>本服務依賴 Supabase、Google、Apple、RevenueCat 等第三方服務商提供底層基礎架構。因上述第三方服務中斷、維護、故障或政策變更導致本服務全部或部分無法使用時，開發者不對此承擔任何責任，亦不因此構成違約。</p></div>
+      <div class="clause"><div class="clause-num">9.3</div><p>開發者保留隨時新增、修改、暫停或移除本服務任何功能（包括但不限於 Wick 皮膚、訂閱方案內容、配對機制）之權利，此類調整不構成對使用者之違約或賠償義務。重大功能異動將盡力提前以推播通知使用者。</p></div>
+      <div class="clause"><div class="clause-num">9.4</div><p>本服務之登入功能依賴 Google 及 Apple 之第三方帳號服務。若因您的 Google 或 Apple 帳號被停用、遭竊或任何非開發者可控之原因導致您無法登入本服務，開發者不對此承擔任何責任。</p></div>
+      <div class="clause"><div class="clause-num">9.5</div><p>開發者不對因使用者之間互動（包括配對後之線下見面、私訊往來、或任何雙方自行發展之關係）所產生之任何人身、財物、精神或其他損害負責。請務必將個人安全置於首位，線下見面請選擇公共場所，並告知可信賴之親友。</p></div>
+      <div class="clause"><div class="clause-num">9.6</div><p>本服務不適用於任何緊急求助用途。如有緊急狀況，請立即撥打 <strong>119</strong>（消防救護）或 <strong>110</strong>（警察）。</p></div>
+    </section>
+
+    <section class="section" id="tz-10">
+      <div class="section-header"><span class="section-num">第十條</span><h2 class="section-title">責任限制</h2></div>
+      <p>在法律允許之最大範圍內，開發者對您因使用或無法使用本服務所產生之任何直接、間接、附帶、特殊、懲罰性或衍生性損害，不承擔責任，即便開發者已被告知此類損害之可能性。在任何情況下，開發者對您承擔之總責任，不超過您在損害發生前三個月內實際支付予開發者之金額，或新臺幣一千元（以較高者為準）。</p>
+    </section>
+
+    <section class="section" id="tz-11">
+      <div class="section-header"><span class="section-num">第十一條</span><h2 class="section-title">條款修改</h2></div>
+      <p>開發者保留隨時修改本條款之權利。條款修改後，應用程式將於您下次開啟時提示您重新確認同意。若您不同意修改後之條款，請停止使用本服務並申請刪除帳號。繼續使用本服務即表示接受修改後之條款。</p>
+    </section>
+
+    <section class="section" id="tz-12">
+      <div class="section-header"><span class="section-num">第十二條</span><h2 class="section-title">準據法與管轄</h2></div>
+      <p>本條款受中華民國法律管轄並依其解釋。因本條款所生之爭議，雙方同意以臺灣臺北地方法院為第一審管轄法院。</p>
+    </section>
+
+    <section class="section" id="tz-13">
+      <div class="section-header"><span class="section-num">第十三條</span><h2 class="section-title">可分割性</h2></div>
+      <p>若本條款任何條文被認定為無效或不可執行，其餘條文仍繼續有效，該無效條文應在法律允許之最大範圍內被解釋為最接近原意之有效條文。</p>
+    </section>
+
+    <section class="section" id="tz-14">
+      <div class="section-header"><span class="section-num">第十四條</span><h2 class="section-title">完整協議</h2></div>
+      <p>本條款及隱私政策構成您與開發者之間關於本服務之完整協議，取代雙方先前就本服務達成之任何口頭或書面約定。</p>
+    </section>
+
+    <section class="section" id="tz-15">
+      <div class="section-header"><span class="section-num">第十五條</span><h2 class="section-title">聯絡方式</h2></div>
+      <p>如對本條款有任何疑問或需要行使您的權利，請透過應用程式內之「設定 › 聯絡客服」功能與我們聯繫，我們將於 10 個工作日內回覆。</p>
+    </section>
+  </div><!-- /panel-terms-zh -->
+
+  <!-- TERMS EN -->
+  <div id="panel-terms-en" class="doc-panel" role="tabpanel" aria-labelledby="tab-terms" lang="en">
+    <div class="version-badge">v2.5 · Last Updated: March 6, 2026</div>
+
+    <nav class="toc" aria-label="Table of Contents" id="toc-terms-en">
+      <div class="toc-toggle" onclick="toggleTOC('toc-terms-en')" role="button" aria-expanded="false" tabindex="0">
+        <div class="toc-title" style="margin-bottom:0;">Contents</div>
+        <span class="toc-toggle-icon">▾</span>
+      </div>
+      <ul class="toc-list">
+        <li><a href="#te-1"><span class="toc-num">1</span>About the Service</a></li>
+        <li><a href="#te-2"><span class="toc-num">2</span>Eligibility</a></li>
+        <li><a href="#te-3"><span class="toc-num">3</span>Account and Security</a></li>
+        <li><a href="#te-4"><span class="toc-num">4</span>User Conduct</a></li>
+        <li><a href="#te-5"><span class="toc-num">5</span>Use of Location Information</a></li>
+        <li><a href="#te-6"><span class="toc-num">6</span>Paid Services</a></li>
+        <li><a href="#te-7"><span class="toc-num">7</span>Intellectual Property</a></li>
+        <li><a href="#te-8"><span class="toc-num">8</span>Account Management, Suspension &amp; Termination</a></li>
+        <li><a href="#te-9"><span class="toc-num">9</span>Disclaimers</a></li>
+        <li><a href="#te-10"><span class="toc-num">10</span>Limitation of Liability</a></li>
+        <li><a href="#te-11"><span class="toc-num">11</span>Changes to These Terms</a></li>
+        <li><a href="#te-12"><span class="toc-num">12</span>Governing Law and Jurisdiction</a></li>
+        <li><a href="#te-13"><span class="toc-num">13</span>Severability</a></li>
+        <li><a href="#te-14"><span class="toc-num">14</span>Entire Agreement</a></li>
+        <li><a href="#te-15"><span class="toc-num">15</span>Contact</a></li>
+      </ul>
+    </nav>
+
+    <p style="font-size:13.5px; color:var(--text-secondary); margin-bottom:32px; line-height:1.9; font-family:var(--font-en); font-size:15px;">
+      Please read these Terms of Service carefully before using the Wick application (the "Service"). By tapping "Agree and Continue," you confirm that you have read, understood, and agree to be bound by these terms. If you do not agree, please do not use the Service.
+    </p>
+
+    <section class="section" id="te-1">
+      <div class="section-header"><span class="section-num">Art. 1</span><h2 class="section-title">About the Service</h2></div>
+      <p>Wick is a location-based social discovery application independently developed and operated by the Wick developer (the "Developer"). Users may "light a wick" for a limited time to reveal their approximate location to other users within a 500-meter radius, and connect with nearby people through a "Like" and "Match" system. The Service is a social discovery tool and does not guarantee any specific matching outcomes or the formation of any relationship.</p>
+    </section>
+
+    <section class="section" id="te-2">
+      <div class="section-header"><span class="section-num">Art. 2</span><h2 class="section-title">Eligibility</h2></div>
+      <div class="clause"><div class="clause-num">2.1</div><p>You must be at least 18 years of age to use the Service.</p></div>
+      <div class="clause"><div class="clause-num">2.2</div><p>You must have full legal capacity to enter into a binding contract in your own name.</p></div>
+      <div class="clause"><div class="clause-num">2.3</div><p>If you are using the Service on behalf of an organization or company, you represent that you have authority to bind that entity to these terms.</p></div>
+      <div class="clause"><div class="clause-num">2.4</div><p>The Developer reserves the right to review and refuse any registration application without providing a reason.</p></div>
+      <div class="clause"><div class="clause-num">2.5</div><p>The Service relies on the age information you provide at login for verification. The Developer has no technical means to independently verify your actual age. If you provide false age information, you bear sole legal responsibility for any consequences.</p></div>
+    </section>
+
+    <section class="section" id="te-3">
+      <div class="section-header"><span class="section-num">Art. 3</span><h2 class="section-title">Account and Security</h2></div>
+      <div class="clause"><div class="clause-num">3.1</div><p>You must authenticate via a Google or Apple account to use the Service.</p></div>
+      <div class="clause"><div class="clause-num">3.2</div><p>You are responsible for maintaining the security of your account credentials and for all activities that occur under your account.</p></div>
+      <div class="clause"><div class="clause-num">3.3</div><p>If you discover unauthorized use of your account, please notify us immediately through the in-app "Contact Support" feature.</p></div>
+      <div class="clause"><div class="clause-num">3.4</div><p>Each person may hold only one account. The Developer may immediately terminate any accounts found to be duplicates.</p></div>
+    </section>
+
+    <section class="section" id="te-4">
+      <div class="section-header"><span class="section-num">Art. 4</span><h2 class="section-title">User Conduct</h2></div>
+      <div class="clause">
+        <div class="clause-num">4.1 — Prohibited Activities</div>
+        <p>You agree not to engage in any of the following:</p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span>Harassing, intimidating, stalking, threatening, or otherwise harming other users;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span>Sending spam, advertising, or unsolicited commercial messages;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span>Impersonating any person or providing false identity information;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(d)</span><span>Uploading or sharing content that is nude, pornographic, violent, or hateful in nature;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(e)</span><span>Engaging in any activity that violates the laws of the Republic of China (Taiwan) or any other applicable laws;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(f)</span><span>Attempting to circumvent, disable, or interfere with the security features or servers of the Service;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(g)</span><span>Accessing the Service through any automated means, including bots, scrapers, or scripts;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(h)</span><span>Collecting, storing, or distributing personal data of other users, including their location information;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(i)</span><span>Reverse engineering or decompiling any part of the Service.</span></div>
+        </div>
+      </div>
+      <div class="warning-block">
+        <span class="warning-icon">⚠️</span>
+        <p><strong>Important Warning:</strong> This Service discloses users' approximate location information. No person may use location or personal information obtained through this Service to track, surveil, harass, or otherwise harm another person. Such conduct may constitute a criminal offense under the Anti-Stalking Act of the Republic of China and other applicable criminal laws. The Developer will actively cooperate with law enforcement and provide complete records as required by law.</p>
+      </div>
+      <div class="clause"><div class="clause-num">4.2 — Content Responsibility</div><p>You bear full responsibility for any text, images, or other content you post. You warrant that your content does not infringe third-party intellectual property rights and does not violate any applicable law. You agree to indemnify and hold the Developer harmless from any third-party claims arising from your uploaded content.</p></div>
+      <div class="clause"><div class="clause-num">4.3 — Reporting Mechanism</div><p>If you encounter users who violate these terms, please use the in-app "Report" feature to notify us. The Developer will review reports within a reasonable time.</p></div>
+      <div class="clause">
+        <div class="clause-num">4.4 — Developer's Content Review Rights</div>
+        <p>The Developer does not proactively monitor your private chats, but may investigate in the following circumstances:</p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span>Upon receipt of a valid report from another user;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span>Upon detection of anomalous behavior suspected to violate these terms;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span>In response to a lawful court order or regulatory authority request.</span></div>
+        </div>
+      </div>
+      <div class="clause"><div class="clause-num">4.5 — Cooperation with Law Enforcement</div><p>Upon receipt of a lawful court order or other valid legal request, the Developer may disclose user data as required by law. Unless prohibited from doing so, the Developer will endeavor to notify the affected user.</p></div>
+    </section>
+
+    <section class="section" id="te-5">
+      <div class="section-header"><span class="section-num">Art. 5</span><h2 class="section-title">Use of Location Information</h2></div>
+      <div class="clause"><div class="clause-num">5.1</div><p>The Service obtains your GPS location once when you open the app to center the map, and once when you actively light a Wick for radar matching. Neither instance involves continuous background tracking or background location access.</p></div>
+      <div class="clause"><div class="clause-num">5.2</div><p>Your exact coordinates are never disclosed to other users. The position shown on the radar map includes a randomized offset of tens to hundreds of meters.</p></div>
+      <div class="clause"><div class="clause-num">5.3</div><p>Location data is automatically removed from the visible list once your wick expires. Raw coordinates are deleted within 24 hours.</p></div>
+      <div class="clause"><div class="clause-num">5.4</div><p>You may withdraw location permission at any time through your device settings. However, doing so will disable radar matching and other core features.</p></div>
+    </section>
+
+    <section class="section" id="te-6">
+      <div class="section-header"><span class="section-num">Art. 6</span><h2 class="section-title">Paid Services</h2></div>
+      <div class="clause"><div class="clause-num">6.1</div><p>The Service offers a free tier and paid subscription plans (Spark, Flame, and Inferno).</p></div>
+      <div class="clause"><div class="clause-num">6.2</div><p>All purchases are processed through the Apple App Store or Google Play Store and are subject to the respective platform's refund policy. The Developer does not directly handle credit card or financial information.</p></div>
+      <div class="clause"><div class="clause-num">6.3</div><p>Subscription plans renew automatically at the end of each billing period until you cancel through your Apple or Google account settings. Paid benefits remain active until the end of the current billing period after cancellation.</p></div>
+      <div class="clause"><div class="clause-num">6.4</div><p>Virtual items (chatroom slots and wick refill packs) are digital goods and are non-refundable once redeemed, except as required by applicable law.</p></div>
+      <div class="clause"><div class="clause-num">6.5</div><p>The Developer reserves the right to modify subscription plan features and pricing at any time, and will provide reasonable advance notice.</p></div>
+    </section>
+
+    <section class="section" id="te-7">
+      <div class="section-header"><span class="section-num">Art. 7</span><h2 class="section-title">Intellectual Property</h2></div>
+      <div class="clause"><div class="clause-num">7.1</div><p>All content within the Service, including text, graphics, interface design, trademarks (the "Wick" name and candle-flame logo), and code, is the property of the Developer and is protected by copyright and other intellectual property laws.</p></div>
+      <div class="clause"><div class="clause-num">7.2</div><p>You grant the Developer a non-exclusive, worldwide, royalty-free, sublicensable license to use content you upload to the Service for the purpose of operating, improving, and promoting the Service. This license terminates when you delete the relevant content or your account.</p></div>
+    </section>
+
+    <section class="section" id="te-8">
+      <div class="section-header"><span class="section-num">Art. 8</span><h2 class="section-title">Account Management, Suspension &amp; Termination</h2></div>
+      <div class="clause"><div class="clause-num">8.1</div><p>The Developer reserves the right to modify, suspend, or discontinue the Service at any time, and will endeavor to provide advance notice except in emergencies.</p></div>
+      <div class="clause">
+        <div class="clause-num">8.2 — Grounds for Suspension or Termination</div>
+        <p><strong style="color:var(--primary-dim);">Serious Violations (immediate termination, no prior notice):</strong></p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span>Violation of Article 4.1(a) (harassment/stalking), 4.1(d) (pornographic/violent content), or 4.1(e) (illegal conduct);</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span>Reasonable suspicion of fraud, abuse, or behavior harming other users;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span>Reasonable suspicion that you are under 18 years of age;</span></div>
+          <div class="sub-item"><span class="sub-item-label">(d)</span><span>Necessary preventive measures to maintain platform safety or as required by law.</span></div>
+        </div>
+        <p style="margin-top:10px;"><strong style="color:var(--primary-dim);">Minor Violations:</strong></p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(e)</span><span>Violation of other provisions where a valid report has been verified. Serious cases may result in immediate suspension; minor cases will receive a warning first.</span></div>
+        </div>
+        <p style="margin-top:10px;"><strong style="color:var(--primary-dim);">Inactive Accounts:</strong></p>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(f)</span><span>Accounts inactive for more than 24 consecutive months. 7 days' advance notice will be provided; log in within this period to retain the account.</span></div>
+        </div>
+      </div>
+      <div class="clause"><div class="clause-num">8.3</div><p>When an account is terminated for a serious violation, the Developer will not refund any purchased subscription fees, wick refill packs, or chatroom slots, to the fullest extent permitted by law.</p></div>
+      <div class="clause"><div class="clause-num">8.4</div><p>You may appeal a suspension or termination within 14 days of receiving notice via the in-app "Contact Support" feature. The Developer will respond within 15 business days. Your account remains suspended during the appeal period.</p></div>
+      <div class="clause"><div class="clause-num">8.5</div><p>You may request account deletion at any time through the in-app settings. Personal data will be handled in accordance with the Privacy Policy.</p></div>
+      <div class="clause"><div class="clause-num">8.6</div><p>Upon account termination, all licenses and usage rights granted to you under these terms will immediately cease. Any unused virtual item balance will be forfeited and is non-refundable.</p></div>
+    </section>
+
+    <section class="section" id="te-9">
+      <div class="section-header"><span class="section-num">Art. 9</span><h2 class="section-title">Disclaimers</h2></div>
+      <div class="clause"><div class="clause-num">9.1</div><p>The Service is provided on an "as is" and "as available" basis. The Developer makes no express or implied warranties regarding the suitability, reliability, accuracy, or uninterrupted availability of the Service.</p></div>
+      <div class="clause"><div class="clause-num">9.2</div><p>The Service relies on third-party infrastructure providers including Supabase, Google, Apple, and RevenueCat. The Developer shall not be liable for any interruption or unavailability resulting from third-party outages, maintenance, failures, or policy changes.</p></div>
+      <div class="clause"><div class="clause-num">9.3</div><p>The Developer reserves the right to add, modify, suspend, or remove any feature at any time. Such changes shall not constitute a breach of contract. The Developer will endeavor to notify users in advance for significant feature changes.</p></div>
+      <div class="clause"><div class="clause-num">9.4</div><p>The Developer shall not be liable if you are unable to access the Service due to issues with your Google or Apple account that are beyond the Developer's control.</p></div>
+      <div class="clause"><div class="clause-num">9.5</div><p>The Developer is not responsible for any harm arising from interactions between users, including in-person meetings following a match. Always prioritize your personal safety — meet in public places and inform a trusted person of your plans.</p></div>
+      <div class="clause"><div class="clause-num">9.6</div><p>The Service is not intended for emergency use. In an emergency, please contact your local emergency services immediately (dial <strong>119</strong> for fire and rescue, <strong>110</strong> for police in Taiwan).</p></div>
+    </section>
+
+    <section class="section" id="te-10">
+      <div class="section-header"><span class="section-num">Art. 10</span><h2 class="section-title">Limitation of Liability</h2></div>
+      <p>To the fullest extent permitted by applicable law, the Developer shall not be liable for any direct, indirect, incidental, special, punitive, or consequential damages arising from your use of or inability to use the Service. In no event shall the Developer's total liability to you exceed the greater of the amount you actually paid to the Developer in the three months preceding the damage, or TWD 1,000.</p>
+    </section>
+
+    <section class="section" id="te-11">
+      <div class="section-header"><span class="section-num">Art. 11</span><h2 class="section-title">Changes to These Terms</h2></div>
+      <p>The Developer reserves the right to modify these terms at any time. When updated, the application will prompt you to re-confirm your agreement. If you do not agree to the updated terms, please stop using the Service and delete your account. Continuing to use the Service constitutes acceptance of the updated terms.</p>
+    </section>
+
+    <section class="section" id="te-12">
+      <div class="section-header"><span class="section-num">Art. 12</span><h2 class="section-title">Governing Law and Jurisdiction</h2></div>
+      <p>These terms are governed by and construed in accordance with the laws of the Republic of China (Taiwan). Any disputes shall be subject to the exclusive jurisdiction of the Taiwan Taipei District Court as the court of first instance.</p>
+    </section>
+
+    <section class="section" id="te-13">
+      <div class="section-header"><span class="section-num">Art. 13</span><h2 class="section-title">Severability</h2></div>
+      <p>If any provision of these terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.</p>
+    </section>
+
+    <section class="section" id="te-14">
+      <div class="section-header"><span class="section-num">Art. 14</span><h2 class="section-title">Entire Agreement</h2></div>
+      <p>These terms and the Privacy Policy constitute the entire agreement between you and the Developer with respect to the Service, superseding all prior agreements.</p>
+    </section>
+
+    <section class="section" id="te-15">
+      <div class="section-header"><span class="section-num">Art. 15</span><h2 class="section-title">Contact</h2></div>
+      <p>If you have any questions about these terms or wish to exercise your rights, please contact us through the in-app "Settings › Contact Support" feature. We will respond within 10 business days.</p>
+    </section>
+  </div><!-- /panel-terms-en -->
+
+  <!-- ═══════════════ PRIVACY ZH ═══════════════ -->
+  <div id="panel-privacy-zh" class="doc-panel" role="tabpanel" aria-labelledby="tab-privacy">
+    <div class="version-badge">v2.5 · 最後更新：2026 年 3 月 6 日</div>
+
+    <nav class="toc" aria-label="目錄" id="toc-privacy-zh">
+      <div class="toc-toggle" onclick="toggleTOC('toc-privacy-zh')" role="button" aria-expanded="false" tabindex="0">
+        <div class="toc-title" style="margin-bottom:0;">目錄</div>
+        <span class="toc-toggle-icon">▾</span>
+      </div>
+      <ul class="toc-list">
+        <li><a href="#pz-1"><span class="toc-num">一</span>資料蒐集者資訊</a></li>
+        <li><a href="#pz-2"><span class="toc-num">二</span>蒐集之個人資料類別及目的</a></li>
+        <li><a href="#pz-3"><span class="toc-num">三</span>個人資料之利用</a></li>
+        <li><a href="#pz-3a"><span class="toc-num">三之一</span>資料刪除與保留說明</a></li>
+        <li><a href="#pz-4"><span class="toc-num">四</span>您的個資權利</a></li>
+        <li><a href="#pz-5"><span class="toc-num">五</span>資料安全</a></li>
+        <li><a href="#pz-6"><span class="toc-num">六</span>未成年人</a></li>
+        <li><a href="#pz-7"><span class="toc-num">七</span>Cookie 與追蹤技術</a></li>
+        <li><a href="#pz-8"><span class="toc-num">八</span>跨境資料傳輸</a></li>
+        <li><a href="#pz-9"><span class="toc-num">九</span>本政策之修改</a></li>
+        <li><a href="#pz-10"><span class="toc-num">十</span>申訴管道</a></li>
+      </ul>
+    </nav>
+
+    <p style="font-size:13.5px; color:var(--text-secondary); margin-bottom:32px; line-height:1.9;">
+      本隱私政策依據中華民國《個人資料保護法》（以下簡稱「個資法」）制定，說明 Wick 應用程式如何蒐集、處理及利用您的個人資料。請於使用本服務前詳細閱讀本政策。
+    </p>
+
+    <section class="section" id="pz-1">
+      <div class="section-header"><span class="section-num">第一條</span><h2 class="section-title">資料蒐集者資訊</h2></div>
+      <p>本服務由 Wick 應用程式開發者（以下簡稱「開發者」）獨立開發及營運。如對個資有任何疑問或需行使個資權利，請透過 App 內「設定 › 聯絡客服」功能與我們聯繫，我們將於 15 個工作日內回覆。</p>
+    </section>
+
+    <section class="section" id="pz-2">
+      <div class="section-header"><span class="section-num">第二條</span><h2 class="section-title">蒐集之個人資料類別及目的</h2></div>
+      <p>開發者依個資法第 8 條規定，告知以下蒐集事項：</p>
+
+      <table class="data-table" aria-label="個人資料蒐集清單">
+        <thead>
+          <tr>
+            <th>資料類別</th>
+            <th>蒐集內容</th>
+            <th>目的</th>
+            <th>保存期限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="資料類別">帳號與身份資訊</td>
+            <td data-label="蒐集內容">姓名、電子郵件、第三方登入 ID（Google / Apple）</td>
+            <td data-label="目的">會員身份驗證、帳號管理（目的代號：040、069）</td>
+            <td data-label="保存期限">帳號存續期間；刪除後 30 天內銷毀</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">個人資料</td>
+            <td data-label="蒐集內容">暱稱、生日（年份）、性別</td>
+            <td data-label="目的">個人化服務、配對功能（目的代號：069、182）</td>
+            <td data-label="保存期限">帳號存續期間</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">位置資訊</td>
+            <td data-label="蒐集內容">GPS 座標（開啟 App 時一次、點燃 Wick 時一次，不持續追蹤）</td>
+            <td data-label="目的">雷達配對、地圖顯示、城市足跡、個人足跡（目的代號：182）</td>
+            <td data-label="保存期限">雷達配對：Wick 燃盡後移除，原始座標 24 小時內刪除</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">裝置與使用資訊</td>
+            <td data-label="蒐集內容">裝置 ID、作業系統版本、App 使用行為、推播 Token（FCM/APNs）</td>
+            <td data-label="目的">服務品質改善、錯誤排除、推播通知（目的代號：090）</td>
+            <td data-label="保存期限">最長 2 年；推播 Token 於帳號刪除時立即移除</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">付費交易資訊</td>
+            <td data-label="蒐集內容">訂閱方案、購買記錄（Apple / Google 平台處理，開發者不儲存金融資訊）</td>
+            <td data-label="目的">訂閱管理、客服處理（目的代號：040）</td>
+            <td data-label="保存期限">依商業會計法：5 年</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">通訊內容</td>
+            <td data-label="蒐集內容">聊天訊息、圖片</td>
+            <td data-label="目的">聊天服務（目的代號：069）</td>
+            <td data-label="保存期限">聊天室關閉後 90 天內刪除（TLS 加密傳輸、靜態加密儲存）</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">同意記錄</td>
+            <td data-label="蒐集內容">條款同意版本、同意時間戳記</td>
+            <td data-label="目的">法遵舉證（目的代號：040）</td>
+            <td data-label="保存期限">帳號存續期間及刪除後 1 年</td>
+          </tr>
+          <tr>
+            <td data-label="資料類別">廣告相關資訊</td>
+            <td data-label="蒐集內容">廣告識別碼（IDFA/GAID）、廣告互動行為</td>
+            <td data-label="目的">播放激勵廣告（目的代號：090）</td>
+            <td data-label="保存期限">最長 1 年（Google AdMob，詳見 policies.google.com/privacy）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warning-block" style="margin-top:16px;">
+        <span class="warning-icon">📍</span>
+        <p>向其他使用者或公開功能顯示時，所有座標均已加入隨機誤差，不揭露精確位置。城市足跡以匿名化概略座標保存最長 7 天，個人足跡僅您自己可見，可隨時刪除。</p>
+      </div>
+    </section>
+
+    <section class="section" id="pz-3">
+      <div class="section-header"><span class="section-num">第三條</span><h2 class="section-title">個人資料之利用</h2></div>
+      <div class="clause"><div class="clause-num">3.1</div><p>開發者僅於上述特定目的必要範圍內利用您的個人資料，包括提供服務、改善功能、客服處理及平台安全維護。</p></div>
+      <div class="clause"><div class="clause-num">3.2</div><p>開發者不會將您的個人資料出售或租賃給任何第三方。</p></div>
+      <div class="clause">
+        <div class="clause-num">3.3　得與第三方共享之情形</div>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span><strong style="color:var(--primary-dim);">服務供應商：</strong>Supabase（資料庫與後端）、Google（Firebase Analytics、AdMob）、RevenueCat（訂閱管理）、Mixpanel（行為分析）、Mapbox（地圖服務）。上述供應商均依開發者指示處理資料，並受保密義務約束。</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span><strong style="color:var(--primary-dim);">執法機關：</strong>依法院命令、檢察官指揮或主管機關合法要求提供資料；除法律禁止通知者外，將以合理方式告知受影響之使用者。</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span><strong style="color:var(--primary-dim);">平台安全：</strong>為調查及處理使用者檢舉，安全團隊得在必要範圍內審閱相關內容，並採取適當行動。</span></div>
+          <div class="sub-item"><span class="sub-item-label">(d)</span><span><strong style="color:var(--primary-dim);">緊急安全：</strong>為防止對您或他人之重大且迫切的危害。</span></div>
+          <div class="sub-item"><span class="sub-item-label">(e)</span><span><strong style="color:var(--primary-dim);">業務移轉：</strong>如發生合併、收購或資產轉讓，您的個人資料可能隨之移轉，開發者將提前通知並保障您的權利。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pz-3a">
+      <div class="section-header"><span class="section-num">第三條之一</span><h2 class="section-title">資料刪除與保留說明</h2></div>
+      <p>當您申請刪除帳號時，開發者將依下列原則處理您的個人資料：</p>
+
+      <div class="clause">
+        <div class="clause-num">可立即刪除（帳號刪除後 30 天內完成）</div>
+        <ul class="legal-list">
+          <li>暱稱、生日（年份）、性別等個人資料</li>
+          <li>位置資訊（已於 24 小時內自動刪除）</li>
+          <li>Google / Apple 登入憑證連結</li>
+          <li>推播通知 Token</li>
+          <li>聊天紀錄及圖片（依 90 天自動刪除機制處理）</li>
+        </ul>
+      </div>
+
+      <div class="clause">
+        <div class="clause-num">依法律規定須保留之資料（不因帳號刪除而提前銷毀）</div>
+        <ul class="legal-list">
+          <li>付款及交易記錄：依商業會計法第 38 條，須保留 5 年</li>
+          <li>條款同意時間戳記：為訴訟舉證需要，於帳號刪除後保留 1 年</li>
+          <li>因執法機關要求留存之資料：依各機關指示辦理</li>
+        </ul>
+      </div>
+
+      <div class="clause">
+        <div class="clause-num">被停用帳號（非使用者主動申請）之資料</div>
+        <p>帳號基本資料保留 90 天，供使用者申訴或開發者調查違規使用；屆期後依上述原則刪除。</p>
+      </div>
+    </section>
+
+    <section class="section" id="pz-4">
+      <div class="section-header"><span class="section-num">第四條</span><h2 class="section-title">您的個資權利</h2></div>
+      <p>依個資法第 3 條，您有以下權利：</p>
+      <ul class="legal-list">
+        <li>查詢或請求閱覽您的個人資料</li>
+        <li>請求製給複製本</li>
+        <li>請求補充或更正</li>
+        <li>請求停止蒐集、處理或利用</li>
+        <li>請求刪除</li>
+      </ul>
+      <p>如需行使上述權利，請透過 App 內「設定 › 帳號 › 聯絡客服」提出申請，開發者將於 15 個工作日內回覆。</p>
+      <div class="warning-block">
+        <span class="warning-icon">ℹ️</span>
+        <p>若您的帳號正處於違規調查或未解決之爭議期間，開發者得於爭議解決前暫緩執行刪除請求，以保全必要之調查證據。暫緩期間開發者將告知原因及預期處理時程。</p>
+      </div>
+    </section>
+
+    <section class="section" id="pz-5">
+      <div class="section-header"><span class="section-num">第五條</span><h2 class="section-title">資料安全</h2></div>
+      <div class="clause"><div class="clause-num">5.1</div><p>開發者採取適當之技術及管理措施保護您的個人資料，包括傳輸過程中之 TLS 加密、存取控制及定期安全審查。</p></div>
+      <div class="clause"><div class="clause-num">5.2</div><p>如發生個資外洩事件，開發者將依個資法規定，於發現後合理期間內以 App 推播通知或電子郵件通知受影響之使用者，並採取補救措施。</p></div>
+    </section>
+
+    <section class="section" id="pz-6">
+      <div class="section-header"><span class="section-num">第六條</span><h2 class="section-title">未成年人</h2></div>
+      <p>本服務不向未滿 18 歲之人士提供。開發者不會在明知情形下蒐集未成年人之個人資料。若發現未成年人已建立帳號，開發者將立即停用該帳號並刪除相關資料。如您知悉未成年人使用本服務，請透過「聯絡客服」通報。</p>
+    </section>
+
+    <section class="section" id="pz-7">
+      <div class="section-header"><span class="section-num">第七條</span><h2 class="section-title">Cookie 與追蹤技術</h2></div>
+      <p>本 App 使用 Firebase Analytics 蒐集匿名使用行為資料，用於改善服務。上述資料不會直接識別您的個人身份。您可於裝置設定中重設廣告識別碼（IDFA/GAID）以限制追蹤，亦可於 App「設定 › 隱私設定」中關閉分析功能。</p>
+    </section>
+
+    <section class="section" id="pz-8">
+      <div class="section-header"><span class="section-num">第八條</span><h2 class="section-title">跨境資料傳輸</h2></div>
+      <p>部分服務供應商（如 Supabase、Google）可能將資料儲存於臺灣境外之伺服器。開發者確保上述供應商提供相當於個資法要求之保護水準，並已與其簽訂資料處理協議。</p>
+    </section>
+
+    <section class="section" id="pz-9">
+      <div class="section-header"><span class="section-num">第九條</span><h2 class="section-title">本政策之修改</h2></div>
+      <p>開發者保留更新本隱私政策之權利。如有重大變更，應用程式將於您下次開啟時提示您重新閱覽並確認同意，同時更新文件頂部之「最後更新日期」。繼續使用本服務即表示接受修改後之政策。</p>
+    </section>
+
+    <section class="section" id="pz-10">
+      <div class="section-header"><span class="section-num">第十條</span><h2 class="section-title">申訴管道</h2></div>
+      <p>若您認為開發者處理您的個人資料有違反個資法之情形，除可透過 App 內客服反映外，您亦有權向個人資料保護委員會或所在地主管機關提出申訴。</p>
+      <p style="margin-top:14px;">如有任何問題，歡迎透過 App 內「設定 › 聯絡客服」功能與我們聯繫。</p>
+    </section>
+  </div><!-- /panel-privacy-zh -->
+
+  <!-- PRIVACY EN -->
+  <div id="panel-privacy-en" class="doc-panel" role="tabpanel" aria-labelledby="tab-privacy" lang="en">
+    <div class="version-badge">v2.5 · Last Updated: March 6, 2026</div>
+
+    <nav class="toc" aria-label="Table of Contents" id="toc-privacy-en">
+      <div class="toc-toggle" onclick="toggleTOC('toc-privacy-en')" role="button" aria-expanded="false" tabindex="0">
+        <div class="toc-title" style="margin-bottom:0;">Contents</div>
+        <span class="toc-toggle-icon">▾</span>
+      </div>
+      <ul class="toc-list">
+        <li><a href="#pe-1"><span class="toc-num">1</span>Data Controller</a></li>
+        <li><a href="#pe-2"><span class="toc-num">2</span>Categories of Personal Data Collected</a></li>
+        <li><a href="#pe-3"><span class="toc-num">3</span>Use of Personal Data</a></li>
+        <li><a href="#pe-3a"><span class="toc-num">3A</span>Data Deletion and Retention Schedule</a></li>
+        <li><a href="#pe-4"><span class="toc-num">4</span>Your Rights</a></li>
+        <li><a href="#pe-5"><span class="toc-num">5</span>Data Security</a></li>
+        <li><a href="#pe-6"><span class="toc-num">6</span>Minors</a></li>
+        <li><a href="#pe-7"><span class="toc-num">7</span>Analytics and Tracking</a></li>
+        <li><a href="#pe-8"><span class="toc-num">8</span>International Data Transfers</a></li>
+        <li><a href="#pe-9"><span class="toc-num">9</span>Updates to This Policy</a></li>
+        <li><a href="#pe-10"><span class="toc-num">10</span>Supervisory Authority</a></li>
+      </ul>
+    </nav>
+
+    <p style="font-size:15px; font-family:var(--font-en); color:var(--text-secondary); margin-bottom:32px; line-height:1.9;">
+      This Privacy Policy is issued in accordance with the Personal Data Protection Act of the Republic of China (Taiwan) and explains how the Wick application collects, processes, and uses your personal data. Please read this policy carefully before using the Service.
+    </p>
+
+    <section class="section" id="pe-1">
+      <div class="section-header"><span class="section-num">Art. 1</span><h2 class="section-title">Data Controller</h2></div>
+      <p>The Service is independently developed and operated by the Wick developer (the "Developer"). If you have any questions about your personal data or wish to exercise your rights, please contact us through the in-app "Settings › Contact Support" feature. We will respond within 15 business days.</p>
+    </section>
+
+    <section class="section" id="pe-2">
+      <div class="section-header"><span class="section-num">Art. 2</span><h2 class="section-title">Categories of Personal Data Collected and Purposes</h2></div>
+      <p>In accordance with Article 8 of the Personal Data Protection Act, we provide the following information:</p>
+
+      <table class="data-table" aria-label="Personal data collection summary">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Data Collected</th>
+            <th>Purpose</th>
+            <th>Retention</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="Category">Account &amp; Identity</td>
+            <td data-label="Data Collected">Name, email address, third-party login ID (Google / Apple)</td>
+            <td data-label="Purpose">Member identity verification and account management</td>
+            <td data-label="Retention">Duration of account; deleted within 30 days of account deletion</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Profile Information</td>
+            <td data-label="Data Collected">Nickname, birth year, gender</td>
+            <td data-label="Purpose">Personalized service delivery and matching features</td>
+            <td data-label="Retention">Duration of account</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Location Information</td>
+            <td data-label="Data Collected">GPS coordinates (once on app open; once when lighting a Wick — no continuous background tracking)</td>
+            <td data-label="Purpose">Radar matching, map display, City Footprint, Personal Footprint</td>
+            <td data-label="Retention">Removed from visible list when wick expires; raw coordinates deleted within 24 hours</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Device &amp; Usage</td>
+            <td data-label="Data Collected">Device ID, OS version, in-app behavior (analytics), push notification token (FCM/APNs)</td>
+            <td data-label="Purpose">Service quality improvement, error diagnostics, service notifications</td>
+            <td data-label="Retention">Up to 2 years; push token deleted immediately upon account deletion</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Payment &amp; Transactions</td>
+            <td data-label="Data Collected">Subscription plan, purchase history (processed by Apple / Google; Developer does not store financial info)</td>
+            <td data-label="Purpose">Subscription management and customer support</td>
+            <td data-label="Retention">As required by law (Business Accounting Act: 5 years)</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Communications</td>
+            <td data-label="Data Collected">Chat messages and images with matched users</td>
+            <td data-label="Purpose">In-app messaging service</td>
+            <td data-label="Retention">Deleted within 90 days of chatroom closure (TLS encrypted in transit, encrypted at rest)</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Consent Records</td>
+            <td data-label="Data Collected">Accepted terms version, consent timestamp</td>
+            <td data-label="Purpose">Legal compliance record-keeping</td>
+            <td data-label="Retention">Duration of account and 1 year after deletion</td>
+          </tr>
+          <tr>
+            <td data-label="Category">Advertising</td>
+            <td data-label="Data Collected">Advertising identifier (IDFA/GAID), ad interaction behavior</td>
+            <td data-label="Purpose">Delivery of rewarded advertisements</td>
+            <td data-label="Retention">Up to 1 year (Google AdMob — see policies.google.com/privacy)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warning-block" style="margin-top:16px;">
+        <span class="warning-icon">📍</span>
+        <p>All coordinates displayed in public-facing or shared features include a randomized offset. Precise location is never disclosed. City Footprint data is retained up to 7 days as anonymized approximate coordinates. Personal Footprint is visible only to you and may be deleted at any time.</p>
+      </div>
+    </section>
+
+    <section class="section" id="pe-3">
+      <div class="section-header"><span class="section-num">Art. 3</span><h2 class="section-title">Use of Personal Data</h2></div>
+      <div class="clause"><div class="clause-num">3.1</div><p>We use your personal data only within the scope of the specific purposes described above, including providing the Service, improving features, customer support, and maintaining platform safety.</p></div>
+      <div class="clause"><div class="clause-num">3.2</div><p>We do not sell or rent your personal data to any third party.</p></div>
+      <div class="clause">
+        <div class="clause-num">3.3 — Third-Party Sharing Circumstances</div>
+        <div class="sub-items">
+          <div class="sub-item"><span class="sub-item-label">(a)</span><span><strong style="color:var(--primary-dim);">Service providers:</strong> Supabase (database and backend), Google (Firebase Analytics and AdMob), RevenueCat (subscription management), Mixpanel (behavioral analytics), and Mapbox (map rendering). These providers process data under our instructions and are bound by confidentiality obligations.</span></div>
+          <div class="sub-item"><span class="sub-item-label">(b)</span><span><strong style="color:var(--primary-dim);">Law enforcement:</strong> Upon receipt of a lawful court order, prosecutorial direction, or other valid request. Unless prohibited by law, the Developer will endeavor to notify the affected user.</span></div>
+          <div class="sub-item"><span class="sub-item-label">(c)</span><span><strong style="color:var(--primary-dim);">Platform safety:</strong> To investigate and handle user reports, the Developer's safety team may review relevant content to the extent necessary.</span></div>
+          <div class="sub-item"><span class="sub-item-label">(d)</span><span><strong style="color:var(--primary-dim);">Emergency safety:</strong> To prevent serious and imminent harm to you or others.</span></div>
+          <div class="sub-item"><span class="sub-item-label">(e)</span><span><strong style="color:var(--primary-dim);">Business transfers:</strong> In the event of a merger, acquisition, or asset transfer, your personal data may be transferred. The Developer will provide advance notice and protect your rights.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pe-3a">
+      <div class="section-header"><span class="section-num">Art. 3A</span><h2 class="section-title">Data Deletion and Retention Schedule</h2></div>
+      <div class="clause">
+        <div class="clause-num">Deleted promptly (within 30 days of account deletion)</div>
+        <ul class="legal-list">
+          <li>Profile information (nickname, birth year, gender)</li>
+          <li>Location data (already auto-deleted within 24 hours)</li>
+          <li>Google / Apple login credential link</li>
+          <li>Push notification token</li>
+          <li>Chat messages and images (subject to the 90-day auto-deletion policy)</li>
+        </ul>
+      </div>
+      <div class="clause">
+        <div class="clause-num">Retained by legal obligation (not deleted early upon account request)</div>
+        <ul class="legal-list">
+          <li>Payment and transaction records: retained for 5 years as required by the Business Accounting Act</li>
+          <li>Terms consent timestamps: retained for 1 year after account deletion for litigation purposes</li>
+          <li>Data subject to a law enforcement hold: retained per the relevant authority's instructions</li>
+        </ul>
+      </div>
+      <div class="clause">
+        <div class="clause-num">Suspended accounts (non-voluntary)</div>
+        <p>Basic account data is retained for 90 days to allow appeal or investigation, then deleted per the above schedule.</p>
+      </div>
+    </section>
+
+    <section class="section" id="pe-4">
+      <div class="section-header"><span class="section-num">Art. 4</span><h2 class="section-title">Your Rights</h2></div>
+      <p>Under Article 3 of the Personal Data Protection Act, you have the right to:</p>
+      <ul class="legal-list">
+        <li>Query or request access to your personal data</li>
+        <li>Request a copy of your personal data</li>
+        <li>Request correction or supplementation of your personal data</li>
+        <li>Request that we cease collecting, processing, or using your personal data</li>
+        <li>Request deletion of your personal data</li>
+      </ul>
+      <p>To exercise any of these rights, please submit a request via "Settings › Account › Contact Support." We will respond within 15 business days.</p>
+      <div class="warning-block">
+        <span class="warning-icon">ℹ️</span>
+        <p><strong>Important Note:</strong> If your account is currently under investigation for a violation or subject to an unresolved dispute, the Developer may defer processing a deletion request until the matter is resolved, in order to preserve necessary evidence. You will be notified of the reason and expected timeline.</p>
+      </div>
+    </section>
+
+    <section class="section" id="pe-5">
+      <div class="section-header"><span class="section-num">Art. 5</span><h2 class="section-title">Data Security</h2></div>
+      <div class="clause"><div class="clause-num">5.1</div><p>We implement appropriate technical and organizational measures to protect your personal data, including TLS encryption for data in transit, access controls, and periodic security reviews.</p></div>
+      <div class="clause"><div class="clause-num">5.2</div><p>In the event of a personal data breach, we will notify affected users via in-app push notification or email within a reasonable period of discovery, in accordance with applicable law, and will take remedial action.</p></div>
+    </section>
+
+    <section class="section" id="pe-6">
+      <div class="section-header"><span class="section-num">Art. 6</span><h2 class="section-title">Minors</h2></div>
+      <p>The Service is not available to persons under the age of 18. The Developer does not knowingly collect personal data from minors. If we discover that a minor has created an account, we will immediately disable the account and delete the associated data. If you are aware of a minor using the Service, please report it through the in-app "Contact Support" feature.</p>
+    </section>
+
+    <section class="section" id="pe-7">
+      <div class="section-header"><span class="section-num">Art. 7</span><h2 class="section-title">Analytics and Tracking</h2></div>
+      <p>The app uses Firebase Analytics to collect anonymized usage data for the purpose of improving the Service. This data does not directly identify you as an individual. You may limit tracking by resetting your device's advertising identifier (IDFA/GAID) in your device settings, or opt out of analytics collection under "Settings › Privacy Settings" in the app.</p>
+    </section>
+
+    <section class="section" id="pe-8">
+      <div class="section-header"><span class="section-num">Art. 8</span><h2 class="section-title">International Data Transfers</h2></div>
+      <p>Some of our service providers (such as Supabase and Google) may store data on servers located outside of Taiwan. The Developer ensures that such providers offer a level of data protection equivalent to that required under Taiwan's Personal Data Protection Act, and has entered into data processing agreements with each such provider.</p>
+    </section>
+
+    <section class="section" id="pe-9">
+      <div class="section-header"><span class="section-num">Art. 9</span><h2 class="section-title">Updates to This Policy</h2></div>
+      <p>The Developer reserves the right to update this Privacy Policy. For material changes, the application will prompt you to review and re-confirm your agreement the next time you open the app, and the "Last Updated" date at the top of this document will be revised accordingly. Continuing to use the Service constitutes acceptance of the updated policy.</p>
+    </section>
+
+    <section class="section" id="pe-10">
+      <div class="section-header"><span class="section-num">Art. 10</span><h2 class="section-title">Supervisory Authority</h2></div>
+      <p>If you believe that the Developer's processing of your personal data violates the Personal Data Protection Act, you may, in addition to contacting our in-app support, lodge a complaint with the Personal Data Protection Commission or the relevant supervisory authority in your jurisdiction.</p>
+      <p style="margin-top:14px;">If you have any questions, please contact us through the in-app "Contact Support" feature.</p>
+    </section>
+  </div><!-- /panel-privacy-en -->
+
+  </main>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="site-footer">
+    <div class="footer-logo">Wick</div>
+    <div class="footer-meta" id="footer-meta-zh">
+      © 2026 Wick App Developer · 版本 2.5<br>
+      本頁面提供公開存取，供 App Store Connect Privacy Policy URL 使用<br>
+      <a href="#" onclick="document.documentElement.scrollTop=0;return false;">回頁首 ↑</a>
+    </div>
+    <div class="footer-meta" id="footer-meta-en" style="display:none;">
+      © 2026 Wick App Developer · Version 2.5<br>
+      This page is publicly accessible for use as the App Store Connect Privacy Policy URL<br>
+      <a href="#" onclick="document.documentElement.scrollTop=0;return false;">Back to top ↑</a>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<script>
+  // ─── State ───────────────────────────────
+  let currentLang = 'zh';
+  let currentTab  = 'terms';
+
+  // ─── TOC toggle (mobile collapsible) ─────
+  function toggleTOC(id) {
+    const toc = document.getElementById(id);
+    if (!toc) return;
+    toc.classList.toggle('open');
+    const btn = toc.querySelector('.toc-toggle');
+    if (btn) btn.setAttribute('aria-expanded', toc.classList.contains('open'));
+  }
+
+  // On desktop (≥641px) auto-open all TOCs
+  function initTOCs() {
+    if (window.innerWidth > 640) {
+      document.querySelectorAll('.toc').forEach(t => {
+        t.classList.add('open');
+        const btn = t.querySelector('.toc-toggle');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+      });
+    }
+  }
+
+  // Re-evaluate on resize
+  let _resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(initTOCs, 120);
+  });
+
+  // ─── Scroll progress bar ─────────────────
+  window.addEventListener('scroll', () => {
+    const doc  = document.documentElement;
+    const pct  = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+    document.getElementById('scroll-bar').style.width = pct + '%';
+  }, { passive: true });
+
+  /* ── 滑鼠光暈（桌面專用）── */
+  (function() {
+    const isTouch = window.matchMedia('(hover:none),(pointer:coarse)').matches;
+    if (isTouch) return; // 手機版直接跳過，不執行任何邏輯
+
+    const glow = document.getElementById('mouse-glow');
+    let gx = 0, gy = 0, mx = 0, my = 0;
+    let mouseActive = false;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (!mouseActive) {
+        mouseActive = true;
+        document.body.classList.add('mouse-active');
+      }
+    });
+
+    document.addEventListener('mouseleave', () => {
+      document.body.classList.remove('mouse-active');
+      mouseActive = false;
+    });
+
+    document.addEventListener('mouseenter', () => {
+      if (mouseActive) document.body.classList.add('mouse-active');
+    });
+
+    (function raf() {
+      // 極慢緩動（0.04），光暈比游標明顯滯後，製造柔和拖尾感
+      gx += (mx - gx) * .04;
+      gy += (my - gy) * .04;
+      glow.style.left = gx + 'px';
+      glow.style.top  = gy + 'px';
+      requestAnimationFrame(raf);
+    })();
+  })();	
+
+  // ─── Language switch ──────────────────────
+  function setLang(lang) {
+    currentLang = lang;
+
+    // Toggle button states
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+
+    // Update tagline
+    document.getElementById('tagline-text').textContent =
+      lang === 'zh' ? '有些緣分，需要剛好' : 'Some encounters only happen when the timing is just right.';
+
+    // Update tab labels
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.textContent = b.dataset[lang];
+    });
+
+    // Update footer
+    document.getElementById('footer-meta-zh').style.display = lang === 'zh' ? '' : 'none';
+    document.getElementById('footer-meta-en').style.display = lang === 'en' ? '' : 'none';
+
+    renderPanels();
+  }
+
+  // ─── Tab switch ───────────────────────────
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      const isActive = b.id === 'tab-' + tab;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    renderPanels();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ─── Render correct panel ─────────────────
+  function renderPanels() {
+    const ids = ['panel-terms-zh','panel-terms-en','panel-privacy-zh','panel-privacy-en'];
+    const target = `panel-${currentTab}-${currentLang}`;
+    ids.forEach(id => {
+      document.getElementById(id).classList.toggle('active', id === target);
+    });
+  }
+
+  // ─── Smooth scroll for TOC anchors ───────
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // ─── Initial render ───────────────────────
+  renderPanels();
+  initTOCs();
+  
+  /* ── 自訂游標 + 光暈 ── */
+  (function () {
+    const isTouch = window.matchMedia('(hover:none),(pointer:coarse)').matches;
+    if (isTouch) return;
+
+    const cur  = document.getElementById('cur');
+    const r1   = document.getElementById('cur-r1');
+    const r2   = document.getElementById('cur-r2');
+    const glow = document.getElementById('mouse-glow');
+
+    let mx=0, my=0, ax=0, ay=0, bx=0, by=0, gx=0, gy=0;
+    let mouseActive = false;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cur.style.left = mx + 'px';
+      cur.style.top  = my + 'px';
+      if (!mouseActive) {
+        mouseActive = true;
+        document.body.classList.add('mouse-active');
+      }
+    });
+
+    document.addEventListener('mouseleave', () => {
+      document.body.classList.remove('mouse-active');
+      mouseActive = false;
+    });
+    document.addEventListener('mouseenter', () => {
+      if (mouseActive) document.body.classList.add('mouse-active');
+    });
+
+    // 點擊脈衝
+    document.addEventListener('mousedown', () => {
+      document.body.classList.add('clicking');
+      setTimeout(() => document.body.classList.remove('clicking'), 200);
+    });
+
+    // hover 偵測
+    document.querySelectorAll('a, button, .tab-btn, .lang-btn, .toc-list a, .back-top').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+    });
+
+    // RAF 緩動：三層速度不同
+    (function raf() {
+      ax += (mx - ax) * .14;  ay += (my - ay) * .14;  // 第一圈（快）
+      bx += (mx - bx) * .07;  by += (my - by) * .07;  // 第二圈（中）
+      gx += (mx - gx) * .04;  gy += (my - gy) * .04;  // 光暈（慢）
+
+      r1.style.left   = ax + 'px'; r1.style.top   = ay + 'px';
+      r2.style.left   = bx + 'px'; r2.style.top   = by + 'px';
+      glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+
+      requestAnimationFrame(raf);
+    })();
+  })();
+</script>
+</body>
+</html>

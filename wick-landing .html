@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wick — 有些緣分，需要剛好</title>
+  <meta name="description" content="點燃一根火柴，發現 500 公尺內剛好也在的那個人。"/>
+  <meta property="og:title" content="Wick — 有些緣分，需要剛好"/>
+  <meta property="og:type" content="website"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+  --bg:           #1C1008;
+  --surface:      #28180A;
+  --surface-alt:  #48382A;
+  --border:       #5E4A36;
+  --bf:           rgba(94,74,54,0.25);
+  --primary:      #E8D5B0;
+  --primary-soft: #F0E2C4;
+  --primary-dim:  #CCB98C;
+  --flame:        #B89070;
+  --flame-dim:    #7A5C40;
+  --tp:   #EEDEBF;
+  --ts:   #AA9272;
+  --th:   #7A6450;
+  --ok:   #8AAF88;
+  --fd:   'Cormorant Garamond', Georgia, serif;
+  --fb:   'Lato', system-ui, sans-serif;
+  --ex:   cubic-bezier(0.16,1,0.3,1);
+  --io:   cubic-bezier(0.4,0,0.2,1);
+  --r:    20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--tp);font-family:var(--fb);font-weight:300;line-height:1.7;overflow-x:hidden;cursor:none}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{cursor:none;border:none;background:none;font-family:var(--fb)}
+ul{list-style:none}
+
+/* ═══ GRAIN ═══ */
+#grain{position:fixed;inset:0;pointer-events:none;z-index:9000;opacity:.038;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:256px;animation:grain .5s steps(2) infinite}
+@keyframes grain{0%{background-position:0 0}25%{background-position:-64px 32px}50%{background-position:32px -64px}75%{background-position:-32px 64px}}
+
+/* ═══ CURSOR — 蠟燭光點 + 雷達脈衝圈 ═══ */
+#cur{
+  position:fixed;width:6px;height:6px;
+  background:var(--primary);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  mix-blend-mode:screen;
+  box-shadow:0 0 8px 2px rgba(232,213,176,.35);
+  transition:width .2s,height .2s,box-shadow .2s;
+}
+/* 第一脈衝圈 */
+#cur-r1{
+  position:fixed;
+  width:28px;height:28px;
+  border:1px solid rgba(232,213,176,.3);
+  border-radius:50%;pointer-events:none;z-index:9997;
+  transform:translate(-50%,-50%);
+  transition:width .32s var(--ex),height .32s var(--ex),border-color .25s,opacity .25s;
+}
+/* 第二脈衝圈（更大更淡，延遲跟隨） */
+#cur-r2{
+  position:fixed;
+  width:52px;height:52px;
+  border:1px solid rgba(232,213,176,.1);
+  border-radius:50%;pointer-events:none;z-index:9996;
+  transform:translate(-50%,-50%);
+  transition:width .55s var(--ex),height .55s var(--ex),border-color .3s,opacity .3s;
+}
+
+/* ═══ 光暈跟隨滑鼠（桌面專用）═══ */
+#mouse-glow{
+  position:fixed;
+  width:320px;height:320px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9001;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse,rgba(184,144,112,.07) 0%,rgba(184,144,112,.03) 40%,transparent 70%);
+  mix-blend-mode:screen;
+  transition:opacity .4s ease;
+  opacity:0;
+}
+body.mouse-active #mouse-glow{opacity:1}
+
+/* hover 時展開成雷達感 */
+body.hovering #cur{width:8px;height:8px;box-shadow:0 0 14px 4px rgba(232,213,176,.4)}
+body.hovering #cur-r1{width:44px;height:44px;border-color:rgba(232,213,176,.45)}
+body.hovering #cur-r2{width:80px;height:80px;border-color:rgba(232,213,176,.15)}
+body.hovering #mouse-glow{
+  width:480px;height:480px;
+  background:radial-gradient(ellipse,rgba(184,144,112,.1) 0%,rgba(184,144,112,.04) 40%,transparent 70%);
+}
+/* 點擊時收縮再爆開 */
+body.clicking #cur-r1{width:14px;height:14px;border-color:rgba(232,213,176,.8)}
+body.clicking #cur-r2{width:24px;height:24px;border-color:rgba(232,213,176,.5)}
+
+/* ── 手機版完全隱藏自訂游標 ── */
+@media(hover:none),(pointer:coarse){
+  #cur,#cur-r1,#cur-r2,#mouse-glow{display:none}
+  body,button{cursor:auto}
+}
+
+/* ═══ REVEAL ═══ */
+.r{opacity:0;transform:translateY(28px);transition:opacity .85s var(--ex),transform .85s var(--ex)}
+.rl{opacity:0;transform:translateX(-32px);transition:opacity .85s var(--ex),transform .85s var(--ex)}
+.rr{opacity:0;transform:translateX(32px);transition:opacity .85s var(--ex),transform .85s var(--ex)}
+.r.v,.rl.v,.rr.v{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* ═══ NAV ═══ */
+#nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 56px;display:flex;align-items:center;justify-content:space-between;transition:background .5s,padding .4s}
+#nav.scrolled{padding:15px 56px;background:rgba(28,16,8,.86);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--bf)}
+.nav-logo{font-family:var(--fd);font-size:20px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--primary);position:relative}
+.nav-logo::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--primary);transition:width .4s var(--ex)}
+.nav-logo:hover::after{width:100%}
+.lang-toggle{display:flex;align-items:center;gap:2px;background:rgba(94,74,54,.18);border:1px solid var(--bf);border-radius:999px;padding:4px 5px}
+.lang-btn{font-family:var(--fb);font-size:11px;font-weight:400;letter-spacing:.08em;color:var(--ts);padding:5px 14px;border-radius:999px;transition:all .25s}
+.lang-btn.active{background:var(--primary);color:var(--bg);font-weight:700}
+
+/* ═══ HERO ═══ */
+#hero{min-height:100svh;display:grid;place-items:center;position:relative;overflow:hidden;padding:120px 56px 100px;text-align:center}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:900px;height:650px;background:radial-gradient(ellipse 60% 55% at 50% 0%,rgba(184,144,112,.1) 0%,rgba(184,144,112,.03) 50%,transparent 100%);animation:glow-br 7s ease-in-out infinite}
+@keyframes glow-br{0%,100%{opacity:.7}50%{opacity:1}}
+.hero-hline{position:absolute;height:1px;left:0;right:0;background:linear-gradient(90deg,transparent,var(--bf),transparent);pointer-events:none}
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;width:1.5px;height:1.5px;background:var(--primary-dim);border-radius:50%;opacity:0;animation:float-up var(--dur,12s) var(--delay,0s) ease-in infinite}
+@keyframes float-up{0%{opacity:0;transform:translateY(0)}15%{opacity:var(--op,.3)}85%{opacity:var(--op,.3)}100%{opacity:0;transform:translateY(-55vh)}}
+
+/* 蠟燭 */
+.candle-wrap{position:relative;width:64px;height:110px;margin:0 auto 52px;animation:hero-in 1s .2s var(--ex) both}
+.candle-halo{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:84px;height:84px;border-radius:50%;background:radial-gradient(ellipse,rgba(232,213,176,.16) 0%,transparent 70%);animation:halo-p 3s ease-in-out infinite}
+@keyframes halo-p{0%,100%{opacity:.6;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.28)}}
+.csw{overflow:visible;width:64px;height:110px}
+.flame-o{transform-origin:50% 100%;animation:fd 2.9s ease-in-out infinite}
+.flame-i{transform-origin:50% 100%;animation:fd 2.1s ease-in-out infinite reverse}
+@keyframes fd{0%,100%{transform:scaleX(1) scaleY(1) skewX(0deg) translateY(0)}20%{transform:scaleX(.88) scaleY(1.07) skewX(-2deg) translateY(-1px)}40%{transform:scaleX(1.1) scaleY(.94) skewX(3deg) translateY(1px)}60%{transform:scaleX(.93) scaleY(1.1) skewX(-1deg) translateY(-2px)}80%{transform:scaleX(1.06) scaleY(.97) skewX(2deg)}}
+.wdrip{animation:drip 4.5s ease-in-out infinite}
+.wdrip2{animation:drip 4.5s 1.8s ease-in-out infinite}
+@keyframes drip{0%{opacity:0;transform:scaleY(0);transform-origin:top}40%{opacity:.7}100%{transform:scaleY(1);opacity:.5;transform-origin:top}}
+
+.hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+.hero-eyebrow{font-family:var(--fb);font-size:10px;font-weight:400;letter-spacing:.42em;text-transform:uppercase;color:var(--flame);margin-bottom:24px;display:flex;align-items:center;gap:14px;animation:hero-in 1s .45s var(--ex) both}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:36px;height:1px;background:var(--flame-dim);opacity:.6}
+.hero-title{font-family:var(--fd);font-size:clamp(54px,8.5vw,104px);font-weight:300;line-height:1.06;letter-spacing:-.015em;color:var(--primary-soft);animation:hero-in 1s .6s var(--ex) both}
+.hero-title .it{font-style:italic;color:var(--primary-dim)}
+.hero-rule{width:1px;height:52px;background:linear-gradient(to bottom,var(--bf),transparent);margin:26px auto;animation:hero-in 1s .75s var(--ex) both}
+.hero-sub{font-family:var(--fd);font-style:italic;font-size:clamp(15px,2vw,19px);font-weight:300;color:var(--ts);margin-bottom:14px;letter-spacing:.03em;animation:hero-in 1s .85s var(--ex) both}
+.hero-desc{font-size:14px;color:var(--th);max-width:400px;line-height:1.9;margin-bottom:50px;animation:hero-in 1s .95s var(--ex) both}
+@keyframes hero-in{0%{opacity:0;transform:translateY(22px)}100%{opacity:1;transform:translateY(0)}}
+
+.dl-group{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;animation:hero-in 1s 1.1s var(--ex) both}
+.dl-btn{display:flex;align-items:center;gap:12px;padding:13px 26px;border-radius:999px;border:1px solid var(--bf);background:transparent;color:var(--tp);font-family:var(--fb);position:relative;overflow:hidden;transition:border-color .35s,transform .35s var(--ex);
+  opacity:.42;pointer-events:none}
+.dl-btn::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(232,213,176,.07),transparent 70%);opacity:0;transition:opacity .35s}
+.dl-btn:hover::before{opacity:1}
+.dl-btn:hover{border-color:rgba(232,213,176,.35);transform:translateY(-2px)}
+.dl-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dl-icon svg{fill:var(--primary-dim)}
+.dl-sub{display:block;font-size:10px;color:var(--th);letter-spacing:.1em;text-transform:uppercase;line-height:1.2;margin-bottom:2px}
+.dl-main{display:block;font-size:15px;font-weight:400;color:var(--tp);letter-spacing:.02em;line-height:1.2}
+.coming{font-size:11px;color:var(--th);letter-spacing:.25em;text-transform:uppercase;display:flex;align-items:center;gap:10px;animation:hero-in 1s 1.2s var(--ex) both}
+.coming::before,.coming::after{content:'';width:20px;height:1px;background:var(--th);opacity:.3}
+
+.scroll-ind{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;opacity:0;animation:fi 1s 2s ease forwards}
+@keyframes fi{to{opacity:1}}
+.si-lbl{font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:var(--th)}
+.si-track{width:1px;height:50px;background:linear-gradient(to bottom,var(--bf),transparent);position:relative;overflow:hidden}
+.si-dot{position:absolute;top:0;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--primary-dim);animation:drop 2s ease-in-out infinite}
+@keyframes drop{0%{top:0;opacity:1}70%{top:calc(100% - 3px);opacity:.5}100%{top:calc(100% - 3px);opacity:0}}
+
+/* ═══ SECTION BASE ═══ */
+.section{max-width:1100px;margin:0 auto;padding:128px 56px}
+.sep{width:100%;height:1px;max-width:1100px;margin:0 auto;background:linear-gradient(90deg,transparent 0%,var(--bf) 25%,var(--bf) 75%,transparent 100%)}
+.lbl{display:inline-flex;align-items:center;gap:10px;font-size:10px;font-weight:400;letter-spacing:.38em;text-transform:uppercase;color:var(--flame);margin-bottom:18px}
+.lbl::before{content:'';width:18px;height:1px;background:var(--flame-dim)}
+.dtitle{font-family:var(--fd);font-size:clamp(36px,5.5vw,62px);font-weight:300;line-height:1.12;color:var(--primary-soft);margin-bottom:20px}
+.dtitle em{font-style:italic;color:var(--primary-dim)}
+.btext{font-size:14.5px;color:var(--ts);line-height:1.9;max-width:520px}
+
+/* ═══ HOW IT WORKS ═══ */
+.steps{margin-top:72px;position:relative}
+.steps::before{content:'';position:absolute;left:27px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--bf) 8%,var(--bf) 92%,transparent)}
+.step{display:grid;grid-template-columns:56px 1fr;gap:0 40px;padding:46px 0;border-bottom:1px solid var(--bf)}
+.step:last-child{border-bottom:none;padding-bottom:0}
+.step:first-child{padding-top:0}
+.step-circ{width:56px;height:56px;border-radius:50%;border:1px solid var(--bf);background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1;transition:border-color .4s,background .4s}
+.step:hover .step-circ{border-color:var(--flame);background:rgba(184,144,112,.08)}
+.step-circ span{font-family:var(--fd);font-size:18px;font-weight:300;color:var(--flame);letter-spacing:.04em}
+.step-body{padding-top:10px}
+.step-title{font-family:var(--fd);font-size:26px;font-weight:400;color:var(--primary);margin-bottom:10px;letter-spacing:.01em}
+.step-desc{font-size:14px;color:var(--ts);line-height:1.85;max-width:560px}
+.step-bar{margin-top:18px;height:1.5px;width:0;background:linear-gradient(90deg,var(--flame-dim),transparent);transition:width 1.2s var(--ex)}
+.step.v .step-bar{width:200px}
+
+/* ═══ RADAR SECTION ═══ */
+#radar-section{max-width:1100px;margin:0 auto;padding:0 56px 128px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.radar-stats{display:flex;gap:36px;margin-top:28px;flex-wrap:wrap}
+.rstat-num{font-family:var(--fd);font-size:42px;font-weight:300;color:var(--primary);line-height:1;letter-spacing:-.02em;margin-bottom:4px}
+.rstat-lbl{font-size:12px;color:var(--th);letter-spacing:.06em}
+
+.radar-svg-wrap{display:flex;justify-content:center;align-items:center}
+.rc-ring{animation:rc-breath var(--dur,4s) var(--delay,0s) ease-in-out infinite}
+@keyframes rc-breath{0%,100%{opacity:var(--lo,.08);transform:scale(1)}50%{opacity:var(--hi,.18);transform:scale(1.012)}}
+.rc-pulse{animation:rc-pulse 4s var(--delay,0s) ease-out infinite}
+@keyframes rc-pulse{0%{r:18;opacity:.55;stroke-width:1.2}100%{r:165;opacity:0;stroke-width:.2}}
+.rc-dot{animation:rc-dot-ap var(--dur,4s) var(--delay,0s) ease-in-out infinite}
+@keyframes rc-dot-ap{0%,20%,80%,100%{opacity:0;r:3}35%,65%{opacity:1;r:var(--r,4)}}
+.rc-you{animation:rc-you 3s ease-in-out infinite}
+@keyframes rc-you{0%,100%{r:5;opacity:1}50%{r:6.5;opacity:.85}}
+.rc-you-aura{animation:rc-you-aura 3s ease-out infinite}
+@keyframes rc-you-aura{0%{r:11;opacity:.45;stroke-width:1.2}100%{r:28;opacity:0;stroke-width:.3}}
+.rc-you-aura2{animation:rc-you-aura 3s 1s ease-out infinite}
+
+/* ═══ WHY WICK ═══ */
+#why{padding:128px 0;overflow:hidden}
+.why-hdr{max-width:1100px;margin:0 auto;padding:0 56px;margin-bottom:56px}
+.why-track{display:flex;gap:2px;padding:0 56px;max-width:1100px;margin:0 auto}
+.why-card{flex:1;min-width:0;padding:44px 32px;background:var(--surface);border:1px solid var(--bf);position:relative;overflow:hidden;transition:background .4s,transform .4s var(--ex)}
+.why-card:first-child{border-radius:var(--r) 0 0 var(--r)}
+.why-card:last-child{border-radius:0 var(--r) var(--r) 0}
+.why-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 115%,rgba(184,144,112,.09),transparent 65%);opacity:0;transition:opacity .5s;pointer-events:none}
+.why-card:hover::after{opacity:1}
+.why-card:hover{background:#2c1c0c;transform:translateY(-4px)}
+
+/* 調亮數字 — 從 .18 opacity 提升至更明亮 */
+.wc-num{
+  font-family:var(--fd);
+  font-size:80px;
+  font-weight:300;
+  /* 原本 rgba(94,74,54,.18)，現在提升至 .38 並加暖色調 */
+  color:rgba(184,144,112,.38);
+  line-height:1;
+  margin-bottom:14px;
+  letter-spacing:-.04em;
+  user-select:none;
+  text-shadow: 0 0 24px rgba(184,144,112,.15);
+}
+.wc-title{font-family:var(--fd);font-size:21px;font-weight:400;color:var(--primary);margin-bottom:12px;line-height:1.3}
+.wc-desc{font-size:13.5px;color:var(--ts);line-height:1.85}
+.wc-line{position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--flame-dim),transparent);transition:width .8s var(--ex)}
+.why-card:hover .wc-line{width:100%}
+
+/* ═══ MEMBERSHIP ═══ */
+#membership .m-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:60px;flex-wrap:wrap}
+.m-note{font-size:13px;color:var(--th);max-width:300px;line-height:1.75;text-align:right}
+.ptable{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bf);border:1px solid var(--bf);border-radius:var(--r);overflow:hidden}
+.pcard{background:var(--surface);padding:0 26px 34px;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:background .4s}
+.pcard:hover{background:#2c1c0c}
+.pcard.feat{background:#271608}
+.pcard.feat:hover{background:#2e1c0a}
+.pcard.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--flame),transparent)}
+
+.p-badge-slot{height:46px;display:flex;align-items:flex-end;padding-bottom:0;padding-top:28px;}
+.pbadge{display:inline-block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--th);border:1px solid var(--bf);border-radius:999px;padding:4px 11px;width:fit-content}
+.p-name-slot{padding-top:16px;height:108px;display:flex;flex-direction:column;justify-content:flex-start;}
+.ptier{font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--th);margin-bottom:7px}
+.pname{font-family:var(--fd);font-size:30px;font-weight:400;color:var(--primary-soft);margin-bottom:8px;line-height:1}
+.pflames{display:flex;gap:4px;height:14px;align-items:center}
+.pf{width:7px;height:13px}
+.pf path{fill:var(--flame-dim)}
+.feat .pf path{fill:var(--flame)}
+.p-price-slot{height:84px;display:flex;flex-direction:column;justify-content:flex-start;padding-top:4px;}
+.pprice{display:flex;align-items:baseline;gap:3px;margin-bottom:5px}
+.pcurr{font-family:var(--fb);font-size:14px;color:var(--ts);align-self:flex-start;padding-top:8px}
+.pamt{font-family:var(--fd);font-size:46px;font-weight:300;color:var(--primary);line-height:1;letter-spacing:-.03em}
+.pamt.free{font-size:28px;padding-bottom:6px;color:var(--ts)}
+.pper{font-size:12px;color:var(--th)}
+.psave{font-size:11px;color:var(--ok);min-height:16px;line-height:1.4}
+.pdiv{height:1px;background:var(--bf);margin:20px 0 22px;opacity:.6}
+.pfeats{display:flex;flex-direction:column;gap:12px;flex:1}
+.pfeat{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--ts);line-height:1.5}
+.pfeat.hi{color:var(--tp)}
+.ficon{width:13px;height:13px;flex-shrink:0;margin-top:1.5px;opacity:.4}
+.pfeat.hi .ficon{opacity:1}
+.ficon path{stroke:var(--ts);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.pfeat.hi .ficon path{stroke:var(--flame)}
+
+/* ═══ FOOTER ═══ */
+#footer{border-top:1px solid var(--bf);padding:62px 56px 46px;max-width:1100px;margin:0 auto}
+.foot-top{display:flex;align-items:flex-start;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-bottom:46px}
+.foot-brand-name{font-family:var(--fd);font-size:21px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:8px}
+.foot-brand-tag{font-family:var(--fd);font-style:italic;font-size:13px;color:var(--th)}
+.foot-links{display:flex;gap:28px;flex-wrap:wrap;align-items:center;padding-top:4px}
+.foot-link{font-size:13px;color:var(--ts);letter-spacing:.03em;position:relative;transition:color .25s}
+.foot-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--primary);transition:width .3s var(--ex)}
+.foot-link:hover{color:var(--primary)}
+.foot-link:hover::after{width:100%}
+
+/* 聯絡信箱樣式 */
+.foot-contact{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:var(--th);
+  margin-top:12px;
+  letter-spacing:.02em;
+}
+.foot-contact a{
+  color:var(--flame);
+  transition:color .25s;
+  position:relative;
+}
+.foot-contact a::after{
+  content:'';
+  position:absolute;
+  bottom:-1px;left:0;width:0;height:1px;
+  background:var(--flame);
+  transition:width .3s var(--ex);
+}
+.foot-contact a:hover{color:var(--primary)}
+.foot-contact a:hover::after{width:100%}
+
+.foot-bot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:22px;border-top:1px solid rgba(94,74,54,.12)}
+.foot-copy{font-size:11.5px;color:var(--th)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:900px){
+  #radar-section{grid-template-columns:1fr;gap:48px;padding:0 32px 100px}
+  .radar-svg-wrap{order:-1}
+}
+@media(max-width:768px){
+  #nav,#nav.scrolled{padding:16px 24px}
+  #hero{padding:96px 24px 88px}
+  .hero-title{font-size:clamp(44px,12vw,72px)}
+  .section{padding:88px 24px}
+  .sep{display:none}
+  #radar-section{padding:0 24px 88px}
+  .why-hdr{padding:0 24px;margin-bottom:36px}
+  .why-track{flex-direction:column;gap:2px;padding:0 24px}
+  .why-card:first-child{border-radius:var(--r) var(--r) 0 0}
+  .why-card:last-child{border-radius:0 0 var(--r) var(--r)}
+  .ptable{grid-template-columns:1fr 1fr}
+  .pcard:nth-child(1){border-radius:var(--r) 0 0 0}
+  .pcard:nth-child(2){border-radius:0 var(--r) 0 0}
+  .pcard:nth-child(3){border-radius:0 0 0 var(--r)}
+  .pcard:nth-child(4){border-radius:0 0 var(--r) 0}
+  #membership .m-intro{flex-direction:column;gap:14px}
+  .m-note{text-align:left;max-width:100%}
+  #footer{padding:46px 24px 34px}
+  .foot-top{flex-direction:column;gap:22px}
+  .foot-bot{flex-direction:column;align-items:flex-start}
+  .scroll-ind{display:none}
+  .radar-stats{gap:20px}
+  .wc-num{font-size:60px}
+
+  /* 手機版 Why Wick 卡片邊角 */
+  .why-card:nth-child(2){border-radius:0}
+  .why-card:nth-child(3){border-radius:0}
+}
+@media(max-width:480px){
+  .ptable{grid-template-columns:1fr}
+  .pcard:nth-child(1){border-radius:var(--r) var(--r) 0 0}
+  .pcard:nth-child(2){border-radius:0}
+  .pcard:nth-child(3){border-radius:0}
+  .pcard:nth-child(4){border-radius:0 0 var(--r) var(--r)}
+  .dl-group{flex-direction:column;align-items:center}
+  .hero-eyebrow::before,.hero-eyebrow::after{width:18px}
+  .foot-links{gap:16px}
+}
+
+/* ═══ 手機版額外觸控最佳化 ═══ */
+@media(hover:none),(pointer:coarse){
+  /* 手機版 hover 效果改為 active 觸發 */
+  .why-card:active{background:#2c1c0c;transform:translateY(-2px)}
+  .pcard:active{background:#2c1c0c}
+  .step:active .step-circ{border-color:var(--flame);background:rgba(184,144,112,.08)}
+  /* 增大可點擊區域 */
+  .lang-btn{min-width:48px;min-height:36px;display:flex;align-items:center;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<div id="grain" aria-hidden="true"></div>
+<div id="cur"    aria-hidden="true"></div>
+<div id="cur-r1" aria-hidden="true"></div>
+<div id="cur-r2" aria-hidden="true"></div>
+<div id="mouse-glow" aria-hidden="true"></div>
+
+<!-- hidden SVG defs -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="s-check" viewBox="0 0 13 13"><path d="M2 6.5L5 9.5L11 3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="s-dash"  viewBox="0 0 13 13"><path d="M3 6.5H10" stroke-linecap="round"/></symbol>
+  <symbol id="s-flame" viewBox="0 0 9 15"><path d="M4.5 14C4.5 14 1 11 1 7.2C1 5.3 2.3 3.9 3.7 3C3.7 4.4 4.6 5.3 4.6 5.3C4.6 5.3 5 3.4 6.4 2C7.7.7 8.5 2 8.5 3.3C8.5 4.7 7.6 5.7 7.6 5.7C7.6 5.7 8 6.6 8 7.5C8 11 4.5 14 4.5 14Z" stroke-width="0"/></symbol>
+  <symbol id="s-apple"   viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.37 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></symbol>
+  <symbol id="s-android" viewBox="0 0 24 24"><path d="M3.18 23.76c.35.2.75.2 1.1.01l12.1-6.96-2.56-2.57-10.64 9.52M1.5 1.56C1.19 1.93 1 2.44 1 3.1v17.8c0 .66.19 1.17.5 1.54l.08.08 9.97-9.97v-.23L1.58 1.48l-.08.08M20.36 10.37l-2.84-1.64-2.82 2.82 2.82 2.82 2.85-1.64c.81-.47.81-1.9-.01-2.36M4.28.24L16.39 7.2l-2.56 2.56L3.18.24c.36-.21.76-.22 1.1 0"/></symbol>
+</svg>
+
+<!-- ═══════ NAV ═══════ -->
+<nav id="nav">
+  <a href="/" class="nav-logo">Wick</a>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="zh" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section id="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-glow"></div>
+    <div class="particles" id="pts"></div>
+    <div class="hero-hline" style="top:18%"></div>
+    <div class="hero-hline" style="bottom:18%"></div>
+  </div>
+
+  <div class="candle-wrap" aria-hidden="true">
+    <div class="candle-halo"></div>
+    <svg class="csw" viewBox="0 0 64 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="18" y="40" width="28" height="62" rx="5" fill="#28180A" stroke="#5E4A36" stroke-width=".8"/>
+      <rect x="22" y="44" width="6" height="22" rx="3" fill="rgba(232,213,176,.04)"/>
+      <path class="wdrip"  d="M32 40Q29 50 27 62Q26 67 28 68Q30 68 30 64Q31 55 32 46Q33 55 34 64Q34 68 36 68Q38 67 37 62Q35 50 32 40Z" fill="#28180A" stroke="#5E4A36" stroke-width=".5"/>
+      <path class="wdrip2" d="M42 41Q41 48 39 57Q38 61 40 61Q42 61 42 57Q43 50 42 41Z" fill="#28180A" stroke="#5E4A36" stroke-width=".4"/>
+      <line x1="32" y1="40" x2="31.5" y2="30" stroke="#7A6450" stroke-width="1.5" stroke-linecap="round"/>
+      <g class="flame-o"><ellipse cx="32" cy="21" rx="5" ry="10" fill="rgba(232,213,176,.85)"/><ellipse cx="32" cy="18" rx="3.5" ry="7" fill="rgba(232,213,176,.6)"/></g>
+      <g class="flame-i"><ellipse cx="32" cy="23" rx="2.5" ry="5" fill="rgba(184,144,112,.7)"/></g>
+      <ellipse cx="32" cy="20" rx="16" ry="12" fill="rgba(232,213,176,.03)"/>
+    </svg>
+  </div>
+
+  <div class="hero-inner">
+    <p class="hero-eyebrow" data-zh="距離 500 公尺的相遇" data-en="Within 500 Metres">距離 500 公尺的相遇</p>
+    <h1 class="hero-title">
+      <span data-zh="有些緣分" data-en="Some connections">有些緣分</span><br>
+      <span class="it" data-zh="需要剛好" data-en="just need the right moment">需要剛好</span>
+    </h1>
+    <div class="hero-rule" aria-hidden="true"></div>
+    <p class="hero-sub"
+       data-zh="點燃一根火柴，發現附近剛好也在的人"
+       data-en="Light a wick. Discover who's nearby, right now.">
+      點燃一根火柴，發現附近剛好也在的人
+    </p>
+    <p class="hero-desc"
+       data-zh="Wick 以距離為核心。當你點燃，500 公尺內也點燃的人才看得到你——安靜的緣分，只在剛好的時刻現身。"
+       data-en="Wick is proximity-first. You appear on the radar only when you light up — quiet serendipity, only when the moment is right.">
+      Wick 以距離為核心。當你點燃，500 公尺內也點燃的人才看得到你——安靜的緣分，只在剛好的時刻現身。
+    </p>
+    <div class="dl-group">
+      <div class="dl-btn" role="button" aria-disabled="true">
+        <span class="dl-icon"><svg width="22" height="22" viewBox="0 0 24 24"><use href="#s-apple"/></svg></span>
+        <span><span class="dl-sub" data-zh="下載於" data-en="Download on the">下載於</span><span class="dl-main">App Store</span></span>
+      </div>
+      <div class="dl-btn" role="button" aria-disabled="true">
+        <span class="dl-icon"><svg width="20" height="20" viewBox="0 0 24 24"><use href="#s-android"/></svg></span>
+        <span><span class="dl-sub" data-zh="取得於" data-en="Get it on">取得於</span><span class="dl-main">Google Play</span></span>
+      </div>
+    </div>
+    <p class="coming" data-zh="即將上線" data-en="Coming Soon">即將上線</p>
+  </div>
+
+  <div class="scroll-ind" aria-hidden="true">
+    <span class="si-lbl" data-zh="向下捲動" data-en="Scroll">向下捲動</span>
+    <div class="si-track"><div class="si-dot"></div></div>
+  </div>
+</section>
+
+<!-- ═══════ HOW IT WORKS ═══════ -->
+<div class="sep" aria-hidden="true"></div>
+<section class="section" id="how">
+  <p class="lbl r"       data-zh="使用方式" data-en="How It Works">使用方式</p>
+  <h2 class="dtitle r d1">
+    <span data-zh="三個動作" data-en="Three moments">三個動作</span><br>
+    <em><span data-zh="一段可能" data-en="one possibility">一段可能</span></em>
+  </h2>
+  <div class="steps">
+    <div class="step r">
+      <div style="display:flex;flex-direction:column;align-items:center;padding-top:4px">
+        <div class="step-circ"><span>01</span></div>
+      </div>
+      <div class="step-body">
+        <h3 class="step-title" data-zh="點燃火柴" data-en="Light Your Wick">點燃火柴</h3>
+        <p class="step-desc"
+           data-zh="按下點燃，你就會出現在附近人的雷達上。想讓對方多知道一點此刻的你，可以留下一句話——也可以什麼都不說，靜靜等待。"
+           data-en="Tap to light up and appear on nearby radars. Leave a note to share your current moment — or say nothing at all, and simply wait.">
+          按下點燃，你就會出現在附近人的雷達上。想讓對方多知道一點此刻的你，可以留下一句話——也可以什麼都不說，靜靜等待。
+        </p>
+        <div class="step-bar"></div>
+      </div>
+    </div>
+    <div class="step r d1">
+      <div style="display:flex;flex-direction:column;align-items:center;padding-top:4px">
+        <div class="step-circ"><span>02</span></div>
+      </div>
+      <div class="step-body">
+        <h3 class="step-title" data-zh="發現附近的人" data-en="Discover Nearby">發現附近的人</h3>
+        <p class="step-desc"
+           data-zh="雷達顯示 500 公尺內同樣點燃的人。頭像在配對前保持模糊——神秘感是 Wick 的設計哲學，不是缺陷。"
+           data-en="The radar shows others who've lit up within 500m. Profiles stay blurred before matching — mystery is by design.">
+          雷達顯示 500 公尺內同樣點燃的人。頭像在配對前保持模糊——神秘感是 Wick 的設計哲學，不是缺陷。
+        </p>
+        <div class="step-bar"></div>
+      </div>
+    </div>
+    <div class="step r d2">
+      <div style="display:flex;flex-direction:column;align-items:center;padding-top:4px">
+        <div class="step-circ"><span>03</span></div>
+      </div>
+      <div class="step-body">
+        <h3 class="step-title" data-zh="雙向 LIKE，開啟對話" data-en="Mutual Like — Start Talking">雙向 LIKE，開啟對話</h3>
+        <p class="step-desc"
+           data-zh="只有雙方都送出 LIKE，聊天室才開啟。沒有單方面的尷尬，只有確認過彼此都感興趣的對話起點。"
+           data-en="Only when both of you like each other does the chat open. No one-sided awkwardness — just a conversation that starts from mutual interest.">
+          只有雙方都送出 LIKE，聊天室才開啟。沒有單方面的尷尬，只有確認過彼此都感興趣的對話起點。
+        </p>
+        <div class="step-bar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ RADAR ═══════ -->
+<div class="sep" aria-hidden="true"></div>
+<div id="radar-section">
+  <div>
+    <p class="lbl rl"       data-zh="匿名保護" data-en="Anonymous by Default">匿名保護</p>
+    <h2 class="dtitle rl d1">
+      <span data-zh="點燃前" data-en="Before you light up">點燃前</span><br>
+      <em><span data-zh="完全隱形" data-en="you're invisible">完全隱形</span></em>
+    </h2>
+    <p class="btext rl d2"
+       data-zh="Wick 不持續追蹤你的位置。你的存在只在點燃的那段時間內出現在雷達上，熄滅即消失，沒有任何紀錄留下。"
+       data-en="Wick never tracks your location continuously. You only appear while your wick burns. When it goes out, you vanish — no trace left.">
+      Wick 不持續追蹤你的位置。你的存在只在點燃的那段時間內出現在雷達上，熄滅即消失，沒有任何紀錄留下。
+    </p>
+    <div class="radar-stats rl d3">
+      <div>
+        <div class="rstat-num">500m</div>
+        <div class="rstat-lbl" data-zh="固定搜尋半徑" data-en="Fixed search radius">固定搜尋半徑</div>
+      </div>
+      <div>
+        <div class="rstat-num">10–30</div>
+        <div class="rstat-lbl" data-zh="分鐘燃燒時間" data-en="Min burn duration">分鐘燃燒時間</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="radar-svg-wrap rr" aria-hidden="true">
+    <svg width="380" height="380" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle class="rc-ring" style="--dur:5s;--delay:0s;--lo:.06;--hi:.14" cx="200" cy="200" r="170" stroke="rgba(94,74,54,1)" stroke-width="1"/>
+      <circle class="rc-ring" style="--dur:5s;--delay:.5s;--lo:.05;--hi:.12" cx="200" cy="200" r="128" stroke="rgba(94,74,54,1)" stroke-width="1" stroke-dasharray="3 6"/>
+      <circle class="rc-ring" style="--dur:5s;--delay:1s;--lo:.05;--hi:.11" cx="200" cy="200" r="86"  stroke="rgba(94,74,54,1)" stroke-width="1" stroke-dasharray="2 8"/>
+      <circle class="rc-ring" style="--dur:5s;--delay:1.5s;--lo:.06;--hi:.13" cx="200" cy="200" r="44"  stroke="rgba(94,74,54,1)" stroke-width="1"/>
+      <line x1="200" y1="30"  x2="200" y2="370" stroke="rgba(94,74,54,.05)" stroke-width="1"/>
+      <line x1="30"  y1="200" x2="370" y2="200" stroke="rgba(94,74,54,.05)" stroke-width="1"/>
+      <circle class="rc-pulse" style="--delay:0s"   cx="200" cy="200" r="18" stroke="rgba(184,144,112,.5)" fill="none"/>
+      <circle class="rc-pulse" style="--delay:1.3s" cx="200" cy="200" r="18" stroke="rgba(184,144,112,.35)" fill="none"/>
+      <circle class="rc-pulse" style="--delay:2.6s" cx="200" cy="200" r="18" stroke="rgba(184,144,112,.2)" fill="none"/>
+      <circle cx="262" cy="137" r="14" fill="rgba(204,185,140,.06)"/>
+      <circle class="rc-dot" style="--dur:5s;--delay:0s;--r:4" cx="262" cy="137" r="4" fill="#CCB98C"/>
+      <circle cx="147" cy="271" r="12" fill="rgba(204,185,140,.05)"/>
+      <circle class="rc-dot" style="--dur:5s;--delay:1.7s;--r:3.5" cx="147" cy="271" r="3.5" fill="#CCB98C"/>
+      <circle cx="316" cy="228" r="11" fill="rgba(204,185,140,.05)"/>
+      <circle class="rc-dot" style="--dur:5s;--delay:3.1s;--r:3" cx="316" cy="228" r="3" fill="#CCB98C"/>
+      <circle cx="124" cy="152" r="10" fill="rgba(204,185,140,.04)"/>
+      <circle class="rc-dot" style="--dur:6s;--delay:.9s;--r:3" cx="124" cy="152" r="3" fill="#CCB98C" opacity=".7"/>
+      <circle class="rc-you-aura2" cx="200" cy="200" r="11" stroke="rgba(232,213,176,.25)" fill="none"/>
+      <circle class="rc-you-aura"  cx="200" cy="200" r="11" stroke="rgba(232,213,176,.4)"  fill="none"/>
+      <circle class="rc-you"       cx="200" cy="200" r="5"  fill="#E8D5B0"/>
+      <circle cx="200" cy="200" r="192" stroke="rgba(94,74,54,.1)" stroke-width=".5"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══════ WHY WICK ═══════ -->
+<div class="sep" aria-hidden="true"></div>
+<section id="why">
+  <div class="why-hdr">
+    <p class="lbl r"    data-zh="為什麼是 Wick" data-en="Why Wick">為什麼是 Wick</p>
+    <h2 class="dtitle r d1">
+      <span data-zh="不一樣的" data-en="A different kind">不一樣的</span><br>
+      <em><span data-zh="相遇方式" data-en="of encounter">相遇方式</span></em>
+    </h2>
+  </div>
+  <div class="why-track">
+    <div class="why-card r">
+      <div class="wc-num" aria-hidden="true">01</div>
+      <h3 class="wc-title" data-zh="你在這裡，他也在這裡" data-en="You're here. So are they.">你在這裡，他也在這裡</h3>
+      <p class="wc-desc"
+         data-zh="不是演算法配對，是此刻的地理緣分。同一條街、同一間咖啡廳——剛好同時出現，才是最真實的開始。"
+         data-en="Not algorithm-matched — geographically serendipitous. Same street, same café, same moment. That's the most genuine start.">
+        不是演算法配對，是此刻的地理緣分。同一條街、同一間咖啡廳——剛好同時出現，才是最真實的開始。
+      </p>
+      <div class="wc-line"></div>
+    </div>
+    <div class="why-card r d1">
+      <div class="wc-num" aria-hidden="true">02</div>
+      <h3 class="wc-title" data-zh="降低開口的成本" data-en="Lower the cost of hello">降低開口的成本</h3>
+      <p class="wc-desc"
+         data-zh="在咖啡廳搭訕需要巨大的勇氣。Wick 讓你先確認對方也有興趣，再決定要不要跨出那一步。"
+         data-en="Walking up to a stranger takes nerve. Wick lets you confirm mutual interest before deciding whether to make a move.">
+        在咖啡廳搭訕需要巨大的勇氣。Wick 讓你先確認對方也有興趣，再決定要不要跨出那一步。
+      </p>
+      <div class="wc-line"></div>
+    </div>
+    <div class="why-card r d2">
+      <div class="wc-num" aria-hidden="true">03</div>
+      <h3 class="wc-title" data-zh="稀缺才有價值" data-en="Scarcity creates meaning">稀缺才有價值</h3>
+      <p class="wc-desc"
+         data-zh="火柴是有限的，燃燒是有時間的。每一次點燃都帶有重量，每一次相遇都值得珍惜。"
+         data-en="Wicks are limited. Burns have a time limit. Every light-up feels intentional — every encounter worth something.">
+        火柴是有限的，燃燒是有時間的。每一次點燃都帶有重量，每一次相遇都值得珍惜。
+      </p>
+      <div class="wc-line"></div>
+    </div>
+    <div class="why-card r d3">
+      <div class="wc-num" aria-hidden="true">04</div>
+      <h3 class="wc-title"
+          data-zh="城市裡的安靜儀式"
+          data-en="A quiet urban ritual">城市裡的安靜儀式</h3>
+      <p class="wc-desc"
+         data-zh="點燃，不一定為了找到人。有時候是選擇對這座城市保持一種開放——坐在咖啡廳裡，讓自己剛好存在於某個可能之中。"
+         data-en="Lighting up isn't always about finding someone. Sometimes it's choosing to stay open to this city — sitting in a café, letting yourself exist inside a possibility.">
+        點燃，不一定為了找到人。有時候是選擇對這座城市保持一種開放——坐在咖啡廳裡，讓自己剛好存在於某個可能之中。
+      </p>
+      <div class="wc-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ MEMBERSHIP ═══════ -->
+<div class="sep" aria-hidden="true"></div>
+<section class="section" id="membership">
+  <div class="m-intro">
+    <div>
+      <p class="lbl r"    data-zh="會員方案" data-en="Membership">會員方案</p>
+      <h2 class="dtitle r d1">
+        <span data-zh="選擇你的" data-en="Choose your">選擇你的</span><br>
+        <em><span data-zh="燃燒方式" data-en="flame">燃燒方式</span></em>
+      </h2>
+    </div>
+    <p class="m-note r d2"
+       data-zh="所有方案均可傳送圖片、無每日訊息上限。搜尋半徑統一 500 公尺，人人平等出現在雷達上。聊天室永久歸屬，不受訂閱狀態影響。"
+       data-en="All plans include image sharing and unlimited messages. 500m radius for everyone. Chatrooms are yours permanently.">
+      所有方案均可傳送圖片、無每日訊息上限。搜尋半徑統一 500 公尺，人人平等出現在雷達上。聊天室永久歸屬，不受訂閱狀態影響。
+    </p>
+  </div>
+
+  <div class="ptable r">
+    <!-- FREE -->
+    <div class="pcard">
+      <div class="p-badge-slot"></div>
+      <div class="p-name-slot">
+        <p class="ptier" data-zh="免費方案" data-en="Free Plan">免費方案</p>
+        <p class="pname">Free</p>
+        <div class="pflames" aria-hidden="true">
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+        </div>
+      </div>
+      <div class="p-price-slot">
+        <div class="pprice"><span class="pamt free" data-zh="免費" data-en="Free">免費</span></div>
+        <p class="psave">&nbsp;</p>
+      </div>
+      <div class="pdiv"></div>
+      <ul class="pfeats">
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每週 5 根火柴" data-en="5 wicks / week">每週 5 根火柴</span></li>
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="燃燒 10 分鐘" data-en="10-min burn">燃燒 10 分鐘</span></li>
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="5 個聊天室（永久）" data-en="5 chatrooms">5 個聊天室（永久）</span></li>
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每日 20 次 LIKE" data-en="20 likes / day">每日 20 次 LIKE</span></li>
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-dash"/></svg><span data-zh="已讀回條" data-en="Read receipts">已讀回條</span></li>
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-dash"/></svg><span data-zh="查看誰 LIKE 過我" data-en="See who liked you">查看誰 LIKE 過我</span></li>
+      </ul>
+    </div>
+    <!-- SPARK -->
+    <div class="pcard">
+      <div class="p-badge-slot"></div>
+      <div class="p-name-slot">
+        <p class="ptier" data-zh="入門付費" data-en="Starter">入門付費</p>
+        <p class="pname">Spark</p>
+        <div class="pflames" aria-hidden="true">
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+        </div>
+      </div>
+      <div class="p-price-slot">
+        <div class="pprice"><span class="pcurr">NT$</span><span class="pamt">109</span><span class="pper" data-zh="/月" data-en="/mo">/月</span></div>
+        <p class="psave" data-zh="半年付省 50%（NT$499）" data-en="Save 50% — NT$499 / 6mo">半年付省 50%（NT$499）</p>
+      </div>
+      <div class="pdiv"></div>
+      <ul class="pfeats">
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每週 20 根 + 每日 +3" data-en="20 wicks/wk + 3/day">每週 20 根 + 每日 +3</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="燃燒 15 分鐘" data-en="15-min burn">燃燒 15 分鐘</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="8 個聊天室（永久）" data-en="8 chatrooms">8 個聊天室（永久）</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每日 50 次 LIKE" data-en="50 likes / day">每日 50 次 LIKE</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="已讀回條" data-en="Read receipts">已讀回條</span></li>
+        <li class="pfeat">   <svg class="ficon" viewBox="0 0 13 13"><use href="#s-dash"/></svg><span data-zh="查看誰 LIKE 過我" data-en="See who liked you">查看誰 LIKE 過我</span></li>
+      </ul>
+    </div>
+    <!-- FLAME -->
+    <div class="pcard">
+      <div class="p-badge-slot">
+        <span class="pbadge" data-zh="多數人的選擇" data-en="Most popular">多數人的選擇</span>
+      </div>
+      <div class="p-name-slot">
+        <p class="ptier" data-zh="進階" data-en="Advanced">進階</p>
+        <p class="pname">Flame</p>
+        <div class="pflames" aria-hidden="true">
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+        </div>
+      </div>
+      <div class="p-price-slot">
+        <div class="pprice"><span class="pcurr">NT$</span><span class="pamt">219</span><span class="pper" data-zh="/月" data-en="/mo">/月</span></div>
+        <p class="psave" data-zh="半年付省 56%（NT$899）" data-en="Save 56% — NT$899 / 6mo">半年付省 56%（NT$899）</p>
+      </div>
+      <div class="pdiv"></div>
+      <ul class="pfeats">
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每週 45 根 + 每日 +8" data-en="45 wicks/wk + 8/day">每週 45 根 + 每日 +8</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="燃燒 20 分鐘" data-en="20-min burn">燃燒 20 分鐘</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="15 個聊天室（永久）" data-en="15 chatrooms">15 個聊天室（永久）</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每日 150 次 LIKE" data-en="150 likes / day">每日 150 次 LIKE</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="已讀回條" data-en="Read receipts">已讀回條</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="查看誰 LIKE 過我" data-en="See who liked you">查看誰 LIKE 過我</span></li>
+      </ul>
+    </div>
+    <!-- INFERNO -->
+    <div class="pcard feat">
+      <div class="p-badge-slot"></div>
+      <div class="p-name-slot">
+        <p class="ptier" data-zh="無上限體驗" data-en="Unlimited">無上限體驗</p>
+        <p class="pname">Inferno</p>
+        <div class="pflames" aria-hidden="true">
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+          <svg class="pf" viewBox="0 0 9 15"><use href="#s-flame"/></svg>
+        </div>
+      </div>
+      <div class="p-price-slot">
+        <div class="pprice"><span class="pcurr">NT$</span><span class="pamt">299</span><span class="pper" data-zh="/月" data-en="/mo">/月</span></div>
+        <p class="psave" data-zh="半年付省 59%（NT$1,099）" data-en="Save 59% — NT$1,099 / 6mo">半年付省 59%（NT$1,099）</p>
+      </div>
+      <div class="pdiv"></div>
+      <ul class="pfeats">
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="每週 80 根 + 每日 +15" data-en="80 wicks/wk + 15/day">每週 80 根 + 每日 +15</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="燃燒 30 分鐘" data-en="30-min burn">燃燒 30 分鐘</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="25 個聊天室（永久）" data-en="25 chatrooms">25 個聊天室（永久）</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="LIKE 無限制" data-en="Unlimited likes">LIKE 無限制</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="已讀回條" data-en="Read receipts">已讀回條</span></li>
+        <li class="pfeat hi"><svg class="ficon" viewBox="0 0 13 13"><use href="#s-check"/></svg><span data-zh="查看誰 LIKE 過我＋雷達高亮" data-en="See who liked you + radar highlight">查看誰 LIKE 過我＋雷達高亮</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<div class="sep" aria-hidden="true"></div>
+<footer id="footer">
+  <div class="foot-top">
+    <div>
+      <p class="foot-brand-name">Wick</p>
+      <p class="foot-brand-tag" data-zh="有些緣分，需要剛好" data-en="Some connections just need the right moment.">有些緣分，需要剛好</p>
+      <!-- 聯絡信箱 -->
+      <p class="foot-contact">
+        <span data-zh="聯絡我們" data-en="Contact">聯絡我們</span>
+        <a href="mailto:wicktwapp@outlook.com">wicktwapp@outlook.com</a>
+      </p>
+    </div>
+    <nav class="foot-links">
+      <!-- 隱私政策 → wick-legal.html（預設 privacy tab）-->
+      <a class="foot-link" href="wick-legal.html#privacy" data-zh="隱私政策" data-en="Privacy Policy">隱私政策</a>
+      <!-- 服務條款 → wick-legal.html（預設 terms tab）-->
+      <a class="foot-link" href="wick-legal.html#terms" data-zh="服務條款" data-en="Terms of Service">服務條款</a>
+      <!-- 聯絡我們 -->
+      <a class="foot-link" href="mailto:wicktwapp@outlook.com" data-zh="聯絡我們" data-en="Contact">聯絡我們</a>
+    </nav>
+  </div>
+  <div class="foot-bot">
+    <p class="foot-copy">&copy; 2025 Wick. All rights reserved.</p>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="zh" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Cursor — 蠟燭光點 + 雙層雷達圈 + 光暈 ── */
+const cur   = document.getElementById('cur');
+const r1    = document.getElementById('cur-r1');
+const r2    = document.getElementById('cur-r2');
+const glow  = document.getElementById('mouse-glow');
+
+let mx=0, my=0, ax=0, ay=0, bx=0, by=0, gx=0, gy=0;
+let mouseActive = false;
+
+// 偵測是否為觸控裝置，若是則跳過整個游標邏輯
+const isTouch = window.matchMedia('(hover:none),(pointer:coarse)').matches;
+
+if(!isTouch){
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    // 核心光點直接跟隨
+    cur.style.left = mx + 'px';
+    cur.style.top  = my + 'px';
+    if(!mouseActive){
+      mouseActive = true;
+      document.body.classList.add('mouse-active');
+    }
+  });
+
+  // 雙圈 + 光暈緩動，三者速度不同，製造層次感
+  (function raf(){
+    // 第一圈（快）
+    ax += (mx - ax) * .14;
+    ay += (my - ay) * .14;
+    // 第二圈（中）
+    bx += (mx - bx) * .07;
+    by += (my - by) * .07;
+    // 光暈（最慢，更柔和）
+    gx += (mx - gx) * .04;
+    gy += (my - gy) * .04;
+
+    r1.style.left  = ax + 'px'; r1.style.top  = ay + 'px';
+    r2.style.left  = bx + 'px'; r2.style.top  = by + 'px';
+    glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+
+    requestAnimationFrame(raf);
+  })();
+
+  // Hover 展開
+  const hoverEls = document.querySelectorAll('a,button,.dl-btn,.why-card,.pcard,.step');
+  hoverEls.forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  // 點擊脈衝
+  document.addEventListener('mousedown', () => {
+    document.body.classList.add('clicking');
+    setTimeout(() => document.body.classList.remove('clicking'), 200);
+  });
+
+  // 游標離開視窗時隱藏光暈
+  document.addEventListener('mouseleave', () => {
+    document.body.classList.remove('mouse-active');
+    mouseActive = false;
+  });
+  document.addEventListener('mouseenter', () => {
+    if(mouseActive) document.body.classList.add('mouse-active');
+  });
+}
+
+/* ── Particles ── */
+const pts = document.getElementById('pts');
+for(let i = 0; i < 30; i++){
+  const d = document.createElement('div'); d.className = 'particle';
+  d.style.cssText = `left:${Math.random()*100}%;bottom:${Math.random()*25}%;--dur:${9+Math.random()*14}s;--delay:${-Math.random()*14}s;--op:${.1+Math.random()*.28};width:${1+Math.random()*1.5}px;height:${1+Math.random()*1.5}px`;
+  pts.appendChild(d);
+}
+
+/* ── Navbar ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50), {passive:true});
+
+/* ── Scroll Reveal ── */
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('v'); obs.unobserve(e.target); } });
+}, {threshold:.1, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.r,.rl,.rr,.step').forEach(el => obs.observe(el));
+
+/* ── Lang ── */
+function setLang(l){
+  document.querySelectorAll('[data-zh]').forEach(el => el.textContent = l==='zh' ? el.dataset.zh : el.dataset.en);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+  document.documentElement.lang = l==='zh' ? 'zh-TW' : 'en';
+}
+
+/* ── 讓 wick-legal.html 的 footer 連結能依語言帶 hash ── */
+document.querySelectorAll('.foot-link[href*="wick-legal"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const lang = document.documentElement.lang === 'en' ? '?lang=en' : '';
+    // 已帶 hash，不需額外處理
+  });
+});
+</script>
+</body>
+</html>
